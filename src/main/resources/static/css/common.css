@@ -1,0 +1,22 @@
+* {
+    padding: 0;
+    margin: 0;
+    outline: none;
+}
+
+body,
+input,
+button,
+select,
+option,
+textarea,
+.tooltip,
+.popover {
+    font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.container {
+    max-width: 100%;
+}
+
+

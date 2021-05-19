@@ -17,7 +17,7 @@ public class SignUpForm {
 
     @NotBlank
     @Length(min = 2, max = 20, message = "최소 2자 이상 입력해주세요.")
-    @Pattern(regexp = "^[ㄱ-ㅎ가-힣a-zA-Z0-9_-]{3,20}$")
+    @Pattern(regexp = "^[ㄱ-ㅎ가-힣a-zA-Z0-9_-]{2,20}$")
     private String nickname;
 
     @NotBlank

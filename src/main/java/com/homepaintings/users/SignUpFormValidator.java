@@ -25,7 +25,7 @@ public class SignUpFormValidator implements Validator {
         if (usersRepository.existsByNickname(signUpForm.getNickname())) {
             errors.rejectValue("nickname", "already_existed", new Object[]{signUpForm.getNickname()}, "이미 존재하는 닉네임입니다.");
         }
-        if (!signUpForm.getPassword().equals(signUpForm.getPasswordAgain())) {
+        if (signUpForm.getPassword() != null && !signUpForm.getPassword().equals(signUpForm.getPasswordAgain())) {
             errors.rejectValue("passwordAgain", "not_same", new Object[]{signUpForm.getPasswordAgain()}, "같은 비밀번호를 입력해주세요.");
         }
     }
