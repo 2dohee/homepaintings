@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Getter @Setter @EqualsAndHashCode(of ="id")
@@ -40,4 +41,8 @@ public class Users {
 
     private LocalDateTime createdDateTime;
 
+    public void generateEmailToken() {
+        this.emailToken = UUID.randomUUID().toString() ;
+        this.emailTokenGeneratedDateTime = LocalDateTime.now();
+    }
 }

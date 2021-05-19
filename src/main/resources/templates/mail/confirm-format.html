@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Welcome homepaintings!</title>
+    <link rel="stylesheet" href="/css/common.css">
+</head>
+
+<body class="bg-light">
+
+<div class="container my-3">
+    <div class="py-4 text-center">
+        <h2>이메일 인증</h2>
+    </div>
+    <hr />
+    <div class="row justify-content-center pt-5">
+        <h2>안녕하세요. <span th:text="${nickname}"></span>님</h2>
+        <p>homepaintings에 서비스를 이용하시려면 링크를 클릭해서 인증을 완료해주세요.</p>
+        <div>
+            <a th:href="${host + link}">이메일 인증하기</a>
+            <p>링크가 동작하지 않는다면 아래의 URL에 접속해주세요.</p>
+            <small th:text="${host + link}"></small>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
