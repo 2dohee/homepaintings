@@ -1,8 +1,6 @@
 package com.homepaintings.users;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -10,6 +8,7 @@ import java.util.UUID;
 
 @Entity
 @Getter @Setter @EqualsAndHashCode(of ="id")
+@Builder @NoArgsConstructor @AllArgsConstructor
 public class Users {
 
     @Id @GeneratedValue
@@ -49,6 +48,6 @@ public class Users {
     }
 
     public boolean isValidEmailToken(String token) {
-        return this.emailToken.equals(token) && this.emailTokenGeneratedDateTime.plusSeconds(20).isAfter(LocalDateTime.now());
+        return this.emailToken.equals(token) && this.emailTokenGeneratedDateTime.plusMinutes(10).isAfter(LocalDateTime.now());
     }
 }

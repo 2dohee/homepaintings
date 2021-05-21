@@ -5,6 +5,9 @@ import com.homepaintings.mail.EmailMessage;
 import com.homepaintings.mail.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +15,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Transactional
@@ -25,10 +29,19 @@ public class UsersService {
     private final TemplateEngine templateEngine;
     private final EmailService emailService;
 
-    public Users signUp(SignUpForm signUpForm) {
+    public void signUp(SignUpForm signUpForm) {
         Users user = saveNewUsers(signUpForm);
         sendSignUpConfirmEmail(user);
-        return user;
+        login(user);
+    }
+
+    public void login(Users user) {
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                user.getEmail(),
+                user.getPassword(),
+                List.of(new SimpleGrantedAuthority("ROLE_USER"))
+        );
+        SecurityContextHolder.getContext().setAuthentication(token);
     }
 
     private void sendSignUpConfirmEmail(Users user) {
@@ -57,6 +70,7 @@ public class UsersService {
 
     public void completeSignUp(Users user) {
         user.setEmailVerified(true);
-        // 로그인
+        login(user);
     }
+
 }

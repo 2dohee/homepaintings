@@ -36,8 +36,7 @@ public class UsersController {
         if (errors.hasErrors()) {
             return "users/sign-up";
         }
-        Users users = usersService.signUp(signUpForm);
-        // 로그인
+        usersService.signUp(signUpForm);
         return "redirect:/";
     }
 
