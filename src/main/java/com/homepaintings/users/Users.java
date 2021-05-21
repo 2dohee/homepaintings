@@ -22,6 +22,8 @@ public class Users {
 
     private LocalDateTime emailTokenGeneratedDateTime;
 
+    private boolean emailVerified;
+
     @Column(nullable = false, unique = true)
     private String nickname;
 
@@ -44,5 +46,9 @@ public class Users {
     public void generateEmailToken() {
         this.emailToken = UUID.randomUUID().toString() ;
         this.emailTokenGeneratedDateTime = LocalDateTime.now();
+    }
+
+    public boolean isValidEmailToken(String token) {
+        return this.emailToken.equals(token) && this.emailTokenGeneratedDateTime.plusSeconds(20).isAfter(LocalDateTime.now());
     }
 }

@@ -54,4 +54,9 @@ public class UsersService {
         user.generateEmailToken();
         return usersRepository.save(user);
     }
+
+    public void completeSignUp(Users user) {
+        user.setEmailVerified(true);
+        // 로그인
+    }
 }
