@@ -1,10 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Welcome homepaintings!</title>
-</head>
-<body>
-home
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="fragments.html :: head"></div>
+<body class="bg-light">
+<nav th:replace="fragments.html :: main-nav"></nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3 px-0">
+            <nav th:replace="fragments.html :: side-menu"></nav>
+        </div>
+        <div class="col-md-9 col-md-offset-3 px-0">
+            home<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+            <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+            <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+            <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+            <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+            <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+            <footer th:replace="fragments.html :: main-footer"></footer>
+        </div>
+    </div>
+</div>
+<div th:include="fragments.html :: js-library" th:remove="tag"></div>
 </body>
 </html>

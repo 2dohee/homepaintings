@@ -22,7 +22,7 @@
                 <small class="invalid-feedback">올바른 이메일을 입력하세요.</small>
                 <small class="form-text text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email Error</small>
             </div>
-            <div class="form-group">
+            <div class="form-group mt-4">
                 <label for="nickname">닉네임</label>
                 <input id="nickname" type="text" th:field="*{nickname}" class="form-control" aria-describedby="nicknameHelp"
                        minlength="2" maxlength="20" placeholder="닉네임을 입력해 주세요." required/>
@@ -32,7 +32,7 @@
                 <small class="invalid-feedback">올바른 닉네임을 입력하세요.</small>
                 <small class="form-text text-danger" th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}">Nickname Error</small>
             </div>
-            <div class="form-group">
+            <div class="form-group mt-4">
                 <label for="password">비밀번호</label>
                 <input id="password" type="password" th:field="*{password}" class="form-control" aria-describedby="passwordHelp"
                        minlength="8" maxlength="20" placeholder="비밀번호를 입력해 주세요." required />
@@ -42,18 +42,18 @@
                 <small class="invalid-feedback">비밀번호를 입력하세요.</small>
                 <small class="form-text text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password Error</small>
             </div>
-            <div class="form-group">
+            <div class="form-group mt-4">
                 <label for="passwordAgain">비밀번호 확인</label>
                 <input id="passwordAgain" type="password" th:field="*{passwordAgain}" class="form-control"
                        minlength="8" maxlength="20" placeholder="비밀번호를 똑같이 입력해 주세요." required />
                 <small class="invalid-feedback">비밀번호를 똑같이 입력하세요.</small>
                 <small class="form-text text-danger" th:if="${#fields.hasErrors('passwordAgain')}" th:errors="*{passwordAgain}">PasswordAgain Error</small>
             </div>
-            <div class="form-group pt-2">
-                <button class="btn btn-primary btn-block" type="submit" aria-describedby="submitHelp">생성하기</button>
+            <div class="form-group pt-2 mt-5">
                 <small id="submitHelp" class="form-text text-muted">
                     모두 입력하셨다면 생성하기 버튼을 눌러주세요.
                 </small>
+                <button class="btn btn-primary btn-block pull-right" type="submit" aria-describedby="submitHelp">생성하기</button>
             </div>
         </form>
     </div>
