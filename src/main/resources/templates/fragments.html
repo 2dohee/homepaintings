@@ -11,34 +11,32 @@
     <link rel="stylesheet" href="/css/common.css">
 </head>
 
-<nav th:fragment="main-nav" id="main-nav" class="navbar navbar-dark bg-dark flex-column flex-md-row px-3 sticky-md-top">
+<nav th:fragment="main-nav" class="navbar navbar-dark bg-dark navbar-expand-md px-3 sticky-top justify-content-center">
     <a class="navbar-brand" th:href="@{/}">
         <img src="/images/logo.png" alt="로고이미지" width="100%" />
     </a>
-    <div class="justify-content-end navbar-nav-scroll">
-        <ul class="navbar-nav flex-row">
-            <li sec:authorize="!isAuthenticated()" class="nav-item px-2">
-                <a class="nav-link" th:href="@{/sign-up}"><i class="fa fa-user-plus" aria-hidden="true"></i> 회원가입</a>
-            </li>
-            <li sec:authorize="!isAuthenticated()" class="nav-item px-2">
-                <a class="nav-link" th:href="@{/login}"><i class="fa fa-sign-in" aria-hidden="true"></i> 로그인</a>
-            </li>
-            <li sec:authorize="isAuthenticated()" class="nav-item dropdown px-2">
-                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <svg th:if="${#strings.isEmpty(user?.profileImage)}" th:data-jdenticon-value="${user.nickname}" class="rounded border bg-light" width="24" height="24" />
-                    <img th:if="${!#strings.isEmpty(user?.profileImage)}" th:src="${user.profileImage}" class="rounded border" width="24" height="24" alt="프로필 사진" />
-                </a>
-                <div class="dropdown-menu dropdown-menu-md-right" aria-labelledby="userDropdown">
-                    <a class="dropdown-item"><span th:text="${user?.nickname}"></span></a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" th:href="@{/settings/profile}">내 정보</a>
-                    <form th:action="@{/logout}" method="post">
-                        <button type="submit" class="dropdown-item btn btn-link"><i class="fa fa-sign-out" aria-hidden="true"></i> 로그아웃</button>
-                    </form>
-                </div>
-            </li>
-        </ul>
-    </div>
+    <ul class="navbar-nav w-100 justify-content-md-end">
+        <li sec:authorize="!isAuthenticated()" class="nav-item px-2">
+            <a class="nav-link" th:href="@{/sign-up}"><i class="fa fa-user-plus" aria-hidden="true"></i> 회원가입</a>
+        </li>
+        <li sec:authorize="!isAuthenticated()" class="nav-item px-2">
+            <a class="nav-link" th:href="@{/login}"><i class="fa fa-sign-in" aria-hidden="true"></i> 로그인</a>
+        </li>
+        <li sec:authorize="isAuthenticated()" class="nav-item dropdown px-2">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <svg th:if="${#strings.isEmpty(user?.profileImage)}" th:data-jdenticon-value="${user?.nickname}" class="rounded border bg-light" width="24" height="24" />
+                <img th:if="${!#strings.isEmpty(user?.profileImage)}" th:src="${user?.profileImage}" class="rounded border" width="24" height="24" alt="프로필 사진" />
+            </a>
+            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <a class="dropdown-item"><span th:text="${user?.nickname}"></span></a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" th:href="@{/settings/profile}">내 정보</a>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="dropdown-item btn btn-link"><i class="fa fa-sign-out" aria-hidden="true"></i> 로그아웃</button>
+                </form>
+            </div>
+        </li>
+    </ul>
 </nav>
 
 <!--navbar -> display: flex-->

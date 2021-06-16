@@ -8,6 +8,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,11 +19,12 @@ import org.thymeleaf.context.Context;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class UsersService {
+public class UsersService implements UserDetailsService {
 
     private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
@@ -37,11 +41,21 @@ public class UsersService {
 
     public void login(Users user) {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                user.getEmail(),
+                new UserPrincipal(user),
                 user.getPassword(),
                 List.of(new SimpleGrantedAuthority("ROLE_USER"))
         );
         SecurityContextHolder.getContext().setAuthentication(token);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<Users> user = usersRepository.findByEmail(username);
+        if (user.isEmpty()) {
+            throw new UsernameNotFoundException(username);
+        }
+        return new UserPrincipal(user.get());
     }
 
     private void sendSignUpConfirmEmail(Users user) {
