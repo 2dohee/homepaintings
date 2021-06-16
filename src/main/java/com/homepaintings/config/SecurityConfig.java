@@ -18,6 +18,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .mvcMatchers("/", "/sign-up", "/login").permitAll()
                 .mvcMatchers(HttpMethod.GET, "/validate-email-token").permitAll()
                 .anyRequest().authenticated();
+
+        http.formLogin()
+                .loginPage("/login")
+                .loginProcessingUrl("/login")
+                .defaultSuccessUrl("/", true);
+
+        http.logout()
+                .logoutSuccessUrl("/");
     }
 
     @Override

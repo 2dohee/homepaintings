@@ -1,14 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Welcome homepaintings!</title>
-    <link rel="stylesheet" href="/css/common.css">
-</head>
-
+<div th:replace="fragments.html :: head"></div>
 <body class="bg-light">
+<nav th:replace="fragments.html :: main-nav"></nav>
 
 <div th:if="${error}" class="container mt-5">
     <div class="alert alert-danger" role="alert">
@@ -34,6 +29,8 @@
         </div>
     </div>
 </div>
+
+<div th:include="fragments.html :: js-library" th:remove="tag"></div>
 
 </body>
 </html>

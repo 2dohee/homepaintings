@@ -1,5 +1,6 @@
 package com.homepaintings.users;
 
+import com.homepaintings.annotation.AuthenticatedUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,7 +27,11 @@ public class UsersController {
     }
 
     @GetMapping("/sign-up")
-    public String signUpForm(Model model) {
+    public String signUpForm(@AuthenticatedUser Users user, Model model) {
+        if (user != null) {
+            model.addAttribute("user", user);
+            return "redirect:/";
+        }
         model.addAttribute("signUpForm", new SignUpForm());
         return "users/sign-up";
     }
@@ -41,7 +46,10 @@ public class UsersController {
     }
 
     @GetMapping("/validate-email-token")
-    public String validateEmailToken(String email, String token, Model model) {
+    public String validateEmailToken(String email, String token, @AuthenticatedUser Users user, Model model) {
+        if (user != null) {
+            model.addAttribute("user", user);
+        }
         Optional<Users> byEmail = usersRepository.findByEmail(email);
         String view = "users/validated-email-token";
         if (byEmail.isEmpty()) {
@@ -55,6 +63,16 @@ public class UsersController {
         usersService.completeSignUp(byEmail.get());
         model.addAttribute("email", byEmail.get().getEmail());
         model.addAttribute("nickname", byEmail.get().getNickname());
+        model.addAttribute("user", byEmail.get());
         return view;
+    }
+
+    @GetMapping("/login")
+    public String login(@AuthenticatedUser Users user, Model model) {
+        if (user != null) {
+            model.addAttribute("user", user);
+            return "redirect:/";
+        }
+        return "users/login";
     }
 }
