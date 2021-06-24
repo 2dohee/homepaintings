@@ -30,7 +30,7 @@
             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                 <a class="dropdown-item"><span th:text="${user?.nickname}"></span></a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" th:href="@{/settings/profile}">내 정보</a>
+                <a class="dropdown-item" th:href="@{/settings/update-profile}">내 정보 변경</a>
                 <form th:action="@{/logout}" method="post">
                     <button type="submit" class="dropdown-item btn btn-link"><i class="fa fa-sign-out" aria-hidden="true"></i> 로그아웃</button>
                 </form>
@@ -158,6 +158,27 @@
         </ul>
     </div>
 </nav>
+
+<ul th:fragment="user-settings-menu(currentMenu)" class="list-group list-group-horizontal-md">
+    <a class="list-group-item list-group-item-action font-weight-bold font-italic" th:href="@{/settings/update-profile}"
+       th:classappend="${currentMenu == 'update-profile'}? active">프로필 수정</a>
+    <a class="list-group-item list-group-item-action font-weight-bold font-italic" th:href="@{/settings/change-password}"
+       th:classappend="${currentMenu == 'change-password'}? active">비밀번호 변경</a>
+    <a class="list-group-item list-group-item-action font-weight-bold font-italic" th:href="@{/settings/verify-email}"
+       th:classappend="${currentMenu == 'verify-email'}? active">이메일 인증</a>
+    <a class="list-group-item list-group-item-action font-weight-bold font-italic" th:href="@{/settings/sign-out}"
+       th:classappend="${currentMenu == 'sign-out'}? active">계정 탈퇴</a>
+</ul>
+
+<div th:fragment="success-message" th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+    <strong>처리 완료!</strong> <span th:text="${successMessage}"></span>
+    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div th:fragment="error-message" th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <strong>처리 실패!</strong> <span th:text="${errorMessage}"></span>
+    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
+</div>
 
 <script th:fragment="form-validation" type="application/javascript">
     (function () {

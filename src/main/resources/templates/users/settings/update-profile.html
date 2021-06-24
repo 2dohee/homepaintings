@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="fragments.html :: head"></div>
+<body class="bg-light">
+<nav th:replace="fragments.html :: main-nav"></nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3 px-0">
+            <nav th:replace="fragments.html :: side-menu"></nav>
+        </div>
+        <div class="col-md-9 col-md-offset-3 mt-5">
+            <div th:replace="fragments.html :: user-settings-menu(currentMenu = 'update-profile')"></div>
+            <div th:replace="fragments.html :: success-message"></div>
+            <div th:replace="fragments.html :: error-message"></div>
+            <div class="py-4 text-center">
+                <h4 class="mb-4 mt-1 text-center settings-title"><span th:text="${user?.nickname}"></span>님의 프로필</h4>
+            </div>
+            <hr />
+            <div class="row justify-content-center">
+                <div class="col-sm-4">
+                    <form class="form-custom-validation" th:object="${profileForm}" th:action="@{/settings/update-profile}" method="post" novalidate>
+                        <div class="form-group">
+                            <label for="nickname">닉네임</label>
+                            <input id="nickname" type="text" th:field="*{nickname}" class="form-control" aria-describedby="nicknameHelp"
+                                   minlength="2" maxlength="20" placeholder="닉네임을 입력해 주세요." required/>
+                            <small id="nicknameHelp" class="form-text text-muted">
+                                2자 이상의 닉네임을 입력해주세요. 닉네임은 중복될 수 없습니다.
+                            </small>
+                            <small class="invalid-feedback">올바른 닉네임을 입력하세요.</small>
+                            <small class="form-text text-danger" th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}">Nickname Error</small>
+                        </div>
+                        <div class="form-group mt-4">
+                            <label for="phoneNumber">연락처</label>
+                            <input id="phoneNumber" type="number" th:field="*{phoneNumber}" class="form-control" aria-describedby="phoneNumberHelp"
+                                   minlength="10" maxlength="11" placeholder="(-) 없이 입력해 주세요." />
+                            <small id="phoneNumberHelp" class="form-text text-muted">
+                                휴대 전화 번호를 입력해 주세요. (-) 없이 입력해 주세요.
+                            </small>
+                            <small class="invalid-feedback">올바른 번호를 입력하세요.</small>
+                            <small class="form-text text-danger" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}">PhoneNumber Error</small>
+                        </div>
+                        <div class="form-group mt-4">
+                            <label for="address1">시/군/구</label>
+                            <input id="address1" type="text" th:field="*{address1}" class="form-control mb-2" maxlength="80" placeholder="시/군/구를 입력해주세요." />
+                            <label for="address2">읍/면/동</label>
+                            <input id="address2" type="text" th:field="*{address2}" class="form-control mb-2" maxlength="80" placeholder="읍/면/동을 입력해주세요." />
+                            <label for="address3">나머지 주소</label>
+                            <input id="address3" type="text" th:field="*{address3}" class="form-control" maxlength="80" placeholder="상세 주소를 입력해주세요." />
+                        </div>
+                        <div class="form-group">
+                            <input th:field="*{profileImage}" id="profileImage" class="form-control" type="hidden" />
+                        </div>
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-primary d-grid col-12">변경하기</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-sm-6 mt-4">
+                    <div class="card text-center">
+                        <div class="card-header">
+                            프로필 이미지
+                        </div>
+                        <div id="current-profile-image" class="mt-3">
+                            <svg th:if="${#strings.isEmpty(profileForm.profileImage)}" th:data-jdenticon-value="${profileForm.nickname}"
+                                 class="rounded border bg-light" width="125" height="125" />
+                            <img th:if="${!#strings.isEmpty(profileForm.profileImage)}" th:src="${profileForm.profileImage}"
+                                 class="rounded border" width="125" height="125" alt="&times;" />
+                        </div>
+                        <div id="new-profile-image" class="mt-3"></div>
+                        <div class="card-body">
+                            <div class="custom-file">
+                                <input id="profile-image-file" class="custom-file-input" type="file" />
+                                <label for="profile-image-file" class="custom-file-label">이미지 변경</label>
+                            </div>
+                            <div id="new-image-control" class="mt-3">
+                                <button class="btn btn-outline-primary d-grid col-12" id="cut-button">자르기</button>
+                                <button class="btn btn-outline-success d-grid col-12" id="confirm-button">확인</button>
+                                <button class="btn btn-outline-warning d-grid col-12" id="reset-button">취소</button>
+                            </div>
+                            <div id="cropped-new-profile-image" class="mt-3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments.html :: form-validation"></div>
+<div th:include="fragments.html :: js-library" th:remove="tag"></div>
+<link rel="stylesheet" href="/node_modules/cropper/dist/cropper.min.css" />
+<script src="/node_modules/cropper/dist/cropper.min.js"></script>
+<script src="/node_modules/jquery-cropper/dist/jquery-cropper.min.js"></script>
+
+<script type="application/javascript">
+    $(function () {
+        let cropper = '';
+        let $confirmBtn = $("#confirm-button");
+        let $resetBtn = $("#reset-button");
+        let $cutBtn = $("#cut-button");
+        let $currentProfileImage = $("#current-profile-image");
+        let $newProfileImage = $("#new-profile-image");
+        let $resultImage = $("#cropped-new-profile-image");
+        let $profileImage = $("#profileImage");
+        let $profileImageFile = $("#profile-image-file");
+
+        $newProfileImage.hide();
+        $confirmBtn.hide();
+        $resetBtn.hide();
+        $cutBtn.hide();
+
+        $($profileImageFile).change(function (e) {
+            if (e.target.files.length == 1) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    if (e.target.result) { // dataURL
+                        if (!e.target.result.startsWith("data:image")) {
+                            alert("이미지 파일을 선택하세요.");
+                            return;
+                        }
+                        let img = document.createElement("img");
+                        img.id = 'new-profile';
+                        img.src = e.target.result;
+                        img.setAttribute('max-width', '100%');
+
+                        $newProfileImage.html(img);
+                        $newProfileImage.show();
+                        $currentProfileImage.hide();
+
+                        let $newImage = $(img);
+                        $newImage.cropper({ aspectRatio: 1 });
+                        cropper = $newImage.data('cropper');
+
+                        $confirmBtn.hide();
+                        $resetBtn.show();
+                        $cutBtn.show();
+                    }
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+
+        $resetBtn.click(function () {
+            $confirmBtn.hide();
+            $resetBtn.hide();
+            $cutBtn.hide();
+            $currentProfileImage.show();
+            $newProfileImage.hide();
+            $resultImage.hide();
+            $profileImage.val('');
+            $profileImageFile.val('');
+        });
+
+        $cutBtn.click(function () {
+            let dataUrl = cropper.getCroppedCanvas().toDataURL();
+            if (dataUrl.length > 10 * 1024 * 1024) {
+                alert("이미지 파일 크기 제한: 10MB => 현재 파일 크기: " + dataUrl.length);
+                return;
+            }
+            let resultImg = document.createElement("img");
+            resultImg.id = "cropped-new-profile-image";
+            resultImg.src = dataUrl;
+            resultImg.width = 125;
+            $resultImage.html(resultImg);
+            $resultImage.show();
+            $confirmBtn.show();
+
+            $confirmBtn.click(function () {
+                $cutBtn.hide();
+                $confirmBtn.hide();
+                $newProfileImage.html(resultImg);
+                $profileImage.val(dataUrl);
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

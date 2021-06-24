@@ -87,4 +87,8 @@ public class UsersService implements UserDetailsService {
         login(user);
     }
 
+    public void updateProfile(Users user, ProfileForm profileForm) {
+        modelMapper.map(profileForm, user);
+        usersRepository.save(user);
+    }
 }
