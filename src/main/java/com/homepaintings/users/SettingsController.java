@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/settings")
@@ -24,6 +23,12 @@ public class SettingsController {
     private final ModelMapper modelMapper;
     private final UsersService usersService;
     private final ProfileFormValidator profileFormValidator;
+    private final PasswordFormValidator passwordFormValidator;
+
+    @InitBinder("passwordForm")
+    public void validatePasswordForm(WebDataBinder webDataBinder) {
+        webDataBinder.addValidators(passwordFormValidator);
+    }
 
     @GetMapping("/update-profile")
     public String updateProfileForm(@AuthenticatedUser Users user, Model model) {
@@ -44,6 +49,26 @@ public class SettingsController {
         usersService.updateProfile(user, profileForm);
         attributes.addFlashAttribute("successMessage", "프로필을 수정했습니다.");
         return "redirect:/settings/update-profile";
+    }
+
+    @GetMapping("/change-password")
+    public String changePasswordForm(@AuthenticatedUser Users user, Model model) {
+        model.addAttribute("user", user);
+        model.addAttribute(modelMapper.map(user, PasswordForm.class));
+        return "users/settings/change-password";
+    }
+
+    @PostMapping("/change-password")
+    public String changePassword(@AuthenticatedUser Users user, @Valid PasswordForm passwordForm, Errors errors,
+                                Model model, RedirectAttributes attributes) {
+        if (errors.hasErrors()) {
+            model.addAttribute("user", user);
+            model.addAttribute("errorMessage", "비밀번호 변경에 실패했습니다.");
+            return "users/settings/change-password";
+        }
+        usersService.changePassword(user, passwordForm.getPassword());
+        attributes.addFlashAttribute("successMessage", "비밀번호를 변경했습니다.");
+        return "redirect:/settings/change-password";
     }
 
 }

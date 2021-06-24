@@ -91,4 +91,9 @@ public class UsersService implements UserDetailsService {
         modelMapper.map(profileForm, user);
         usersRepository.save(user);
     }
+
+    public void changePassword(Users user, String password) {
+        user.setPassword(passwordEncoder.encode(password));
+        usersRepository.save(user);
+    }
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -98,5 +99,57 @@ class SettingsControllerTest {
                 .andExpect(authenticated().withUsername(TEST_EMAIL));
 
         assertNotEquals(usersRepository.findByEmail(TEST_EMAIL).get().getPhoneNumber(), "11112345678");
+    }
+
+    @Test
+    @WithUser(TEST_EMAIL)
+    @DisplayName("비밀번호 변경 화면이 제대로 뜨는지 확인")
+    void changePasswordForm() throws Exception {
+        mockMvc.perform(get("/settings/change-password"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("users/settings/change-password"))
+                .andExpect(model().attributeExists("user", "passwordForm"))
+                .andExpect(authenticated().withUsername(TEST_EMAIL));
+    }
+
+    @Test
+    @WithUser(TEST_EMAIL)
+    @DisplayName("비밀번호 변경 - 정상")
+    void changePassword() throws Exception {
+        Users user = usersRepository.findByEmail(TEST_EMAIL).get();
+        String prevPassword = user.getPassword();
+
+        mockMvc.perform(post("/settings/change-password")
+                    .param("password", "55555555")
+                    .param("passwordAgain", "55555555")
+                    .with(csrf()))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/settings/change-password"))
+                .andExpect(flash().attributeExists("successMessage"))
+                .andExpect(authenticated().withUsername(TEST_EMAIL));
+
+        assertNotEquals(prevPassword, user.getPassword());
+    }
+
+    @Test
+    @WithUser(TEST_EMAIL)
+    @DisplayName("비밀번호 변경 - 잘못된 입력값(불일치)")
+    void signUp_with_wrong_value() throws Exception {
+        Users user = usersRepository.findByEmail(TEST_EMAIL).get();
+        String prevPassword = user.getPassword();
+
+        mockMvc.perform(post("/settings/change-password")
+                    .param("password", "55555555")
+                    .param("passwordAgain", "66666666")
+                    .with(csrf()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(view().name("users/settings/change-password"))
+                .andExpect(model().attributeExists("user", "errorMessage"))
+                .andExpect(model().hasErrors())
+                .andExpect(authenticated().withUsername(TEST_EMAIL));
+
+        assertEquals(prevPassword, user.getPassword());
     }
 }
