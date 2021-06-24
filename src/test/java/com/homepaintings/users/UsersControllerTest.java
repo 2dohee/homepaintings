@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,6 +34,7 @@ class UsersControllerTest {
     @Autowired MockMvc mockMvc;
     @Autowired UsersRepository usersRepository;
     @Autowired UsersService usersService;
+    @Autowired UsersFactory usersFactory;
     @MockBean EmailService emailService;
 
     @Test
@@ -88,7 +88,7 @@ class UsersControllerTest {
     @Test
     @DisplayName("회원가입 처리 확인 - 잘못된 입력값1(중복 이메일)")
     void signUp_with_wrong_value_2() throws Exception {
-        saveNewUser("test@email.com", "test2");
+        usersFactory.saveNewUser("test@email.com", "test2");
         mockMvc.perform(post("/sign-up")
                     .param("email", "test@email.com")
                     .param("nickname", "test")
@@ -108,7 +108,7 @@ class UsersControllerTest {
     @Test
     @DisplayName("회원가입 처리 확인 - 잘못된 입력값3(중복 닉네임)")
     void signUp_with_wrong_value_3() throws Exception {
-        saveNewUser("test2@email.com", "test");
+        usersFactory.saveNewUser("test2@email.com", "test");
         mockMvc.perform(post("/sign-up")
                     .param("email", "test@email.com")
                     .param("nickname", "test")
@@ -125,20 +125,10 @@ class UsersControllerTest {
         then(emailService).shouldHaveNoMoreInteractions(); // 이메일이 날아가지 않음
     }
 
-    private Users saveNewUser(String email, String nickname) {
-        Users user = Users.builder()
-                .id(1L).email(email).nickname(nickname).password("12345678")
-                .createdDateTime(LocalDateTime.now()).build();
-        user.generateEmailToken();
-        Users savedUser = usersRepository.save(user);
-        usersRepository.flush();
-        return savedUser;
-    }
-
     @Test
     @DisplayName("이메일 인증 처리 - 정상")
     void validateEmailToken() throws Exception {
-        Users user = saveNewUser("test@email.com", "test");
+        Users user = usersFactory.saveNewUser("test@email.com", "test");
         mockMvc.perform(get("/validate-email-token")
                     .param("email", user.getEmail())
                     .param("token", user.getEmailToken()))
@@ -165,7 +155,7 @@ class UsersControllerTest {
     @Test
     @DisplayName("이메일 인증 처리 - 잘못된 입력값2(유효하지 않은 토큰)")
     void validateEmailToken_with_wrong_value_2() throws Exception {
-        Users user = saveNewUser("test@email.com", "test");
+        Users user = usersFactory.saveNewUser("test@email.com", "test");
         mockMvc.perform(get("/validate-email-token")
                     .param("email", user.getEmail())
                     .param("token", "token123"))
