@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="fragments.html :: head"></div>
+<body class="bg-light">
+<nav th:replace="fragments.html :: main-nav"></nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3 px-0">
+            <nav th:replace="fragments.html :: side-menu"></nav>
+        </div>
+        <div class="col-md-9 col-md-offset-3 mt-5">
+            <div th:replace="fragments.html :: user-settings-menu(currentMenu = 'sign-out')"></div>
+            <div class="py-4 text-center">
+                <h4 class="mb-4 mt-1 text-center settings-title">회원 탈퇴</h4>
+            </div>
+            <hr />
+            <div class="row justify-content-center p-4">
+                <div class="col-md-6">
+                    <div class="alert alert-danger" role="alert">
+                        <p>아래 버튼을 통해 회원 탈퇴를 하실 수 있습니다.</p>
+                        <hr>
+                        <p class="mb-0">회원 탈퇴를 하시면 모든 정보가 사라지게 됩니다.</p>
+                    </div>
+                    <button class="btn btn-danger d-grid col-12" data-bs-toggle="modal" data-bs-target="#reconfirmSignOut">회원 탈퇴하기</button>
+                    <div class="modal fade" id="reconfirmSignOut" tabindex="-1" role="dialog" aria-labelledby="reconfirmSignOutLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="reconfirmSignOutLabel">재확인</h5>
+                                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    정말로 삭제하시겠습니까?
+                                </div>
+                                <div class="modal-footer">
+                                    <form th:action="@{/settings/sign-out}" method="post">
+                                        <div class="form-group">
+                                            <button class="btn btn-primary" type="submit" >예</button>
+                                        </div>
+                                    </form>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">아니오</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:include="fragments.html :: js-library" th:remove="tag"></div>
+
+</body>
+</html>

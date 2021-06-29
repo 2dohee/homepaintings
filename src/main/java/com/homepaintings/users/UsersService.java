@@ -102,4 +102,10 @@ public class UsersService implements UserDetailsService {
         usersRepository.save(user);
         sendVerificationTokenEmail(user);
     }
+
+    public void deleteUser(Users user) {
+        usersRepository.delete(user);
+        SecurityContextHolder.clearContext();
+    }
+
 }

@@ -209,4 +209,30 @@ class SettingsControllerTest {
         assertEquals(emailToken, user.getEmailToken()); // 안 바뀜
         then(emailService).should(times(1)).sendEmail(any(EmailMessage.class)); // 처음 가입 시만 1번 보냄
     }
+
+    @Test
+    @WithUser(TEST_EMAIL)
+    @DisplayName("계정 삭제 화면이 제대로 뜨는지 확인")
+    void signOutForm() throws Exception {
+        mockMvc.perform(get("/settings/sign-out"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("users/settings/sign-out"))
+                .andExpect(model().attributeExists("user"))
+                .andExpect(authenticated().withUsername(TEST_EMAIL));
+    }
+
+    @Test
+    @WithUser(TEST_EMAIL)
+    @DisplayName("계정 삭제")
+    void signOut() throws Exception {
+        assertFalse(usersRepository.findByEmail(TEST_EMAIL).isEmpty());
+        mockMvc.perform(post("/settings/sign-out")
+                    .with(csrf()))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"))
+                .andExpect(unauthenticated());
+
+        assertTrue(usersRepository.findByEmail(TEST_EMAIL).isEmpty());
+    }
 }

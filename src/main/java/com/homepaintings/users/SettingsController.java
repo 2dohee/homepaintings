@@ -89,4 +89,16 @@ public class SettingsController {
         return "redirect:/settings/verify-email";
     }
 
+    @GetMapping("sign-out")
+    public String signOutForm(@AuthenticatedUser Users user, Model model) {
+        model.addAttribute("user", user);
+        return "users/settings/sign-out";
+    }
+
+    @PostMapping("sign-out")
+    public String signOut(@AuthenticatedUser Users user) {
+        usersService.deleteUser(user);
+        return "redirect:/";
+    }
+
 }
