@@ -1,5 +1,6 @@
 package com.homepaintings.users;
 
+import com.homepaintings.mail.EmailMessage;
 import com.homepaintings.mail.EmailService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,8 +12,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.times;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
@@ -151,5 +156,57 @@ class SettingsControllerTest {
                 .andExpect(authenticated().withUsername(TEST_EMAIL));
 
         assertEquals(prevPassword, user.getPassword());
+    }
+
+    @Test
+    @WithUser(TEST_EMAIL)
+    @DisplayName("이메일 인증 화면이 제대로 뜨는지 확인")
+    void verifyEmailForm() throws Exception {
+        mockMvc.perform(get("/settings/verify-email"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("users/settings/verify-email"))
+                .andExpect(model().attributeExists("user"))
+                .andExpect(authenticated().withUsername(TEST_EMAIL));
+    }
+
+    @Test
+    @WithUser(TEST_EMAIL)
+    @DisplayName("이메일 인증코드 재전송 - 성공")
+    void verifyEmail() throws Exception {
+        Users user = usersRepository.findByEmail(TEST_EMAIL).get();
+        String emailToken = user.getEmailToken();
+        user.setEmailTokenGeneratedDateTime(LocalDateTime.now().minusMinutes(11)); // 재전송을 하기 위해 시간을 돌림
+        usersRepository.save(user);
+        usersRepository.flush();
+
+        mockMvc.perform(post("/settings/verify-email")
+                    .with(csrf()))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/settings/verify-email"))
+                .andExpect(flash().attributeExists("successMessage"))
+                .andExpect(authenticated().withUsername(TEST_EMAIL));
+
+        assertNotEquals(emailToken, user.getEmailToken());
+        then(emailService).should(times(2)).sendEmail(any(EmailMessage.class));
+    }
+
+    @Test
+    @WithUser(TEST_EMAIL)
+    @DisplayName("이메일 인증코드 재전송 - 실패(쿨타임)")
+    void verifyEmail_cooltime() throws Exception {
+        Users user = usersRepository.findByEmail(TEST_EMAIL).get();
+        String emailToken = user.getEmailToken();
+
+        mockMvc.perform(post("/settings/verify-email")
+                    .with(csrf()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(view().name("users/settings/verify-email"))
+                .andExpect(model().attributeExists("user", "errorMessage"))
+                .andExpect(authenticated().withUsername(TEST_EMAIL));
+
+        assertEquals(emailToken, user.getEmailToken()); // 안 바뀜
+        then(emailService).should(times(1)).sendEmail(any(EmailMessage.class)); // 처음 가입 시만 1번 보냄
     }
 }

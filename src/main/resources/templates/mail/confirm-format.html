@@ -19,7 +19,7 @@
         <h2>안녕하세요. <span th:text="${nickname}"></span>님</h2>
         <p>homepaintings에 서비스를 이용하시려면 링크를 클릭해서 인증을 완료해주세요.</p>
         <div>
-            <a th:href="${host + link}">이메일 인증하기</a>
+            <a th:href="@{host + link}">이메일 인증하기</a>
             <p>링크가 동작하지 않는다면 아래의 URL에 접속해주세요.</p>
             <small th:text="${host + link}"></small>
         </div>

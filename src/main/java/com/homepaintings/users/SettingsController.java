@@ -71,4 +71,22 @@ public class SettingsController {
         return "redirect:/settings/change-password";
     }
 
+    @GetMapping("/verify-email")
+    public String verifyEmailForm(@AuthenticatedUser Users user, Model model) {
+        model.addAttribute("user", user);
+        return "users/settings/verify-email";
+    }
+
+    @PostMapping("/verify-email")
+    public String verifyEmail(@AuthenticatedUser Users user, Model model, RedirectAttributes attributes) {
+        if (user.isValidEmailToken(user.getEmailToken())) {
+            model.addAttribute("user", user);
+            model.addAttribute("errorMessage", "아직 이메일이 유효하므로 보내진 이메일로 인증하실 수 있습니다.");
+            return "users/settings/verify-email";
+        }
+        usersService.resendEmailToken(user);
+        attributes.addFlashAttribute("successMessage", "인증코드를 재발송했습니다.");
+        return "redirect:/settings/verify-email";
+    }
+
 }

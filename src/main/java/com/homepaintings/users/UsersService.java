@@ -35,7 +35,7 @@ public class UsersService implements UserDetailsService {
 
     public void signUp(SignUpForm signUpForm) {
         Users user = saveNewUsers(signUpForm);
-        sendSignUpConfirmEmail(user);
+        sendVerificationTokenEmail(user);
         login(user);
     }
 
@@ -58,7 +58,7 @@ public class UsersService implements UserDetailsService {
         return new UserPrincipal(user.get());
     }
 
-    private void sendSignUpConfirmEmail(Users user) {
+    private void sendVerificationTokenEmail(Users user) {
         Context context = new Context();
         context.setVariable("nickname", user.getNickname());
         context.setVariable("host", appProperties.getHost());
@@ -95,5 +95,11 @@ public class UsersService implements UserDetailsService {
     public void changePassword(Users user, String password) {
         user.setPassword(passwordEncoder.encode(password));
         usersRepository.save(user);
+    }
+
+    public void resendEmailToken(Users user) {
+        user.generateEmailToken();
+        usersRepository.save(user);
+        sendVerificationTokenEmail(user);
     }
 }
