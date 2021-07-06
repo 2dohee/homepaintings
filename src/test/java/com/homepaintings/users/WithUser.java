@@ -11,4 +11,6 @@ public @interface WithUser {
 
     String value();
 
+    Authority authority() default Authority.ROLE_USER;
+
 }

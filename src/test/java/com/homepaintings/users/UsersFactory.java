@@ -13,7 +13,7 @@ public class UsersFactory {
     public Users saveNewUser(String email, String nickname) {
         Users user = Users.builder()
                 .email(email).nickname(nickname).password("12345678")
-                .createdDateTime(LocalDateTime.now()).build();
+                .createdDateTime(LocalDateTime.now()).authority(Authority.ROLE_USER).build();
         user.generateEmailToken();
         Users savedUser = usersRepository.save(user);
         usersRepository.flush();

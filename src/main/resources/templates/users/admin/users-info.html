@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="fragments.html :: head"></div>
+<body class="bg-light">
+<nav th:replace="fragments.html :: main-nav"></nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3 px-0">
+            <nav th:replace="fragments.html :: side-menu"></nav>
+        </div>
+        <div class="col-md-9 col-md-offset-3 mt-5">
+            <div class="py-4 text-center">
+                <h4 class="mb-4 mt-1 text-center settings-title">회원 관리</h4>
+            </div>
+            <hr />
+            <div class="row justify-content-center p-4">
+                <div class="col-md-9">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">이메일</th>
+                            <th scope="col">닉네임</th>
+                            <th scope="col">연락처</th>
+                            <th scope="col">인증 여부</th>
+                            <th scope="col">생성일</th>
+                        </tr>
+                        </thead>
+                        <tbody th:each="user: ${userList}">
+                        <tr>
+                            <th scope="row" th:text="${userStat.count}"></th>
+                            <td th:text="${user.email}"></td>
+                            <td th:text="${user.nickname}"></td>
+                            <td th:text="${user.phoneNumber}"></td>
+                            <td th:text="${user.emailVerified} ? 'Yes' : 'No'"></td>
+                            <td><span class="date-time" th:text="${user.createdDateTime}"></span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments.html :: form-validation"></div>
+<div th:include="fragments.html :: js-library" th:remove="tag"></div>
+<div th:include="fragments.html :: korea-date-time" th:remove="tag"></div>
+
+</body>
+</html>

@@ -8,10 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,6 +38,8 @@ class UsersControllerTest {
     @Autowired UsersService usersService;
     @Autowired UsersFactory usersFactory;
     @MockBean EmailService emailService;
+
+    final String TEST_EMAIL = "test@email.com";
 
     @Test
     @DisplayName("회원가입 페이지가 성공적으로 뜨는지 확인")
@@ -162,5 +166,20 @@ class UsersControllerTest {
                     .andExpect(status().isOk())
                 .andExpect(view().name("users/validated-email-token"))
                 .andExpect(model().attribute("error", "유효한 이메일 토큰이 아닙니다."));
+    }
+
+    @Test
+    @WithUser(value = TEST_EMAIL, authority = Authority.ROLE_ADMIN)
+    @DisplayName("관리자 유저 관리 페이지가 성공적으로 뜨는지 확인")
+    void admin_userInfo() throws Exception {
+        Users user1 = usersFactory.saveNewUser("user1@email.com", "user1");
+        Users user2 = usersFactory.saveNewUser("user2@email.com", "user2");
+
+        mockMvc.perform(get("/admin/users-info"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("users/admin/users-info"))
+                .andExpect(model().attributeExists("user", "userList"))
+                .andExpect(model().attribute("userList", List.of(user2, user1)))
+                .andExpect(authenticated().withAuthorities(List.of(new SimpleGrantedAuthority(Authority.ROLE_ADMIN.toString()))));
     }
 }

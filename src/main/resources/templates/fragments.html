@@ -30,7 +30,10 @@
             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                 <a class="dropdown-item"><span th:text="${user?.nickname}"></span></a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" th:href="@{/settings/update-profile}">내 정보 변경</a>
+                <a class="dropdown-item" th:href="@{/settings/update-profile}">
+                    <i class="fa fa-address-book" aria-hidden="true"></i> 내 정보 변경</a>
+                <a sec:authorize="hasRole('ROLE_ADMIN')" class="dropdown-item" th:href="@{/admin/users-info}">
+                    <i class="fa fa-eye" aria-hidden="true"></i> 관리자 페이지</a>
                 <form th:action="@{/logout}" method="post">
                     <button type="submit" class="dropdown-item btn btn-link"><i class="fa fa-sign-out" aria-hidden="true"></i> 로그아웃</button>
                 </form>
@@ -198,6 +201,24 @@
         }, false);
     }());
 </script>
+
+<div th:fragment="korea-date-time">
+    <script src="/node_modules/moment/min/moment-with-locales.min.js"></script>
+    <script type="application/javascript">
+        $(function() {
+            moment.locale('ko');
+            $(".date-time").text(function (idx, dateTime) {
+                return moment(dateTime, "YYYY-MM-DD hh:mm a").format('LLL');
+            });
+            $(".simple-date-time").text(function(index, dateTime) {
+                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").format('YY-MM-DD hh:mm A');
+            });
+            $(".fromNow").text(function(index, dateTime) {
+                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").fromNow();
+            });
+        });
+    </script>
+</div>
 
 <div th:fragment="js-library">
     <script src="/node_modules/jquery/dist/jquery.min.js"></script>

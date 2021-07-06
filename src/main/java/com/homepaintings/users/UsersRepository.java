@@ -3,6 +3,7 @@ package com.homepaintings.users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Transactional(readOnly = true)
@@ -14,4 +15,6 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
     Optional<Users> findByEmail(String email);
 
     Optional<Users> findByNickname(String test);
+
+    List<Users> findByAuthorityOrderByCreatedDateTimeDesc(Authority authority);
 }

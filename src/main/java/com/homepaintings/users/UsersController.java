@@ -2,6 +2,7 @@ package com.homepaintings.users;
 
 import com.homepaintings.annotation.AuthenticatedUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -74,5 +76,13 @@ public class UsersController {
             return "redirect:/";
         }
         return "users/login";
+    }
+
+    @GetMapping("/admin/users-info")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public String usersInfo(@AuthenticatedUser Users user, Model model) {
+        model.addAttribute("user", user);
+        model.addAttribute("userList", usersRepository.findByAuthorityOrderByCreatedDateTimeDesc(Authority.ROLE_USER));
+        return "users/admin/users-info";
     }
 }
