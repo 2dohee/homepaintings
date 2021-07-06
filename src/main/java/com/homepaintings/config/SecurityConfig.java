@@ -1,5 +1,6 @@
 package com.homepaintings.config;
 
+import com.homepaintings.users.Authority;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +28,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .mvcMatchers("/", "/sign-up", "/login").permitAll()
+                .mvcMatchers("/admin/**").hasAuthority(Authority.ROLE_ADMIN.toString())
                 .mvcMatchers(HttpMethod.GET, "/validate-email-token").permitAll()
                 .anyRequest().authenticated();
 
@@ -36,7 +38,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .defaultSuccessUrl("/", true);
 
         http.logout()
-                .logoutSuccessUrl("/");
+                .logoutSuccessUrl("/")
+                .deleteCookies("JSESSIONID");
 
         http.rememberMe()
                 .userDetailsService(userDetailsService)

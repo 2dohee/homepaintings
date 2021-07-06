@@ -43,7 +43,7 @@ public class UsersService implements UserDetailsService {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                 new UserPrincipal(user),
                 user.getPassword(),
-                List.of(new SimpleGrantedAuthority("ROLE_USER"))
+                List.of(new SimpleGrantedAuthority(user.getAuthority().toString()))
         );
         SecurityContextHolder.getContext().setAuthentication(token);
     }
@@ -79,6 +79,7 @@ public class UsersService implements UserDetailsService {
         Users user = modelMapper.map(signUpForm, Users.class);
         user.setCreatedDateTime(LocalDateTime.now());
         user.generateEmailToken();
+        user.setAuthority(Authority.ROLE_USER);
         return usersRepository.save(user);
     }
 

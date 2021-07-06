@@ -42,6 +42,9 @@ public class Users {
 
     private LocalDateTime createdDateTime;
 
+    @Enumerated(EnumType.STRING)
+    private Authority authority; // 권한은 1개만 가질 수 있음
+
     public void generateEmailToken() {
         this.emailToken = UUID.randomUUID().toString() ;
         this.emailTokenGeneratedDateTime = LocalDateTime.now();

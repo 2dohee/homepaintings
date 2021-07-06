@@ -12,7 +12,7 @@ public class UserPrincipal extends User {
     private Users user;
 
     public UserPrincipal(Users user) {
-        super(user.getEmail(), user.getPassword(), List.of(new SimpleGrantedAuthority("ROLE_USER")));
+        super(user.getEmail(), user.getPassword(), List.of(new SimpleGrantedAuthority(user.getAuthority().toString())));
         this.user = user;
     }
 }
