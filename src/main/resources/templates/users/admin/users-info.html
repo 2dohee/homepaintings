@@ -15,7 +15,7 @@
                 <h4 class="mb-4 mt-1 text-center settings-title">회원 관리</h4>
             </div>
             <hr />
-            <div class="row justify-content-center p-4">
+            <div class="row justify-content-center py-4">
                 <div class="col-md-9">
                     <table class="table table-hover">
                         <thead>
@@ -30,7 +30,7 @@
                         </thead>
                         <tbody th:each="user: ${userList}">
                         <tr>
-                            <th scope="row" th:text="${userStat.count}"></th>
+                            <th scope="row" th:text="${currentOffset + userStat.count}"></th>
                             <td th:text="${user.email}"></td>
                             <td th:text="${user.nickname}"></td>
                             <td th:text="${user.phoneNumber}"></td>
@@ -39,6 +39,29 @@
                         </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-9">
+                    <nav>
+                        <ul class="pagination justify-content-between">
+                            <li class="page-item" th:classappend="${currentFirstPage < 10}? disabled">
+                                <a th:href="@{'/admin/users-info?sort=createdDateTime,desc&page=' + ${currentFirstPage - 10}}"
+                                   class="page-link"><i class="fa fa-long-arrow-left" aria-hidden="true"></i></a>
+                            </li>
+                            <div class="d-inline-flex justify-content-center">
+                                <li class="page-item" th:classappend="${i == userList.getNumber()}? active"
+                                    th:each="i : ${#numbers.sequence(currentFirstPage, currentLastPage, 1)}">
+                                    <a th:href="@{'/admin/users-info?sort=createdDateTime,desc&page=' + ${i}}"
+                                       class="page-link" th:text="${i + 1}"></a>
+                                </li>
+                            </div>
+                            <li class="page-item" th:classappend="${currentLastPage >= userList.getTotalPages() - 1}? disabled">
+                                <a th:href="@{'/admin/users-info?sort=createdDateTime,desc&page=' + ${currentLastPage + 1}}"
+                                   class="page-link"><i class="fa fa-long-arrow-right" aria-hidden="true"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </div>

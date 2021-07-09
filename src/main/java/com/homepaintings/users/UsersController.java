@@ -2,6 +2,10 @@ package com.homepaintings.users;
 
 import com.homepaintings.annotation.AuthenticatedUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -80,9 +84,16 @@ public class UsersController {
 
     @GetMapping("/admin/users-info")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String usersInfo(@AuthenticatedUser Users user, Model model) {
+    public String usersInfo(@AuthenticatedUser Users user, Model model,
+                            @PageableDefault(size = 20, sort = "createdDateTime", direction = Sort.Direction.DESC) Pageable pageable) {
         model.addAttribute("user", user);
-        model.addAttribute("userList", usersRepository.findByAuthorityOrderByCreatedDateTimeDesc(Authority.ROLE_USER));
+        Page<Users> userList = usersRepository.findByAuthorityOrderByCreatedDateTimeDesc(Authority.ROLE_USER, pageable);
+        model.addAttribute("userList", userList);
+        int currentFirstPage = userList.getNumber() / 10 * 10;
+        int currentLastPage = Math.min(currentFirstPage + 9, userList.getTotalPages() - 1);
+        model.addAttribute("currentFirstPage", currentFirstPage);
+        model.addAttribute("currentLastPage", currentLastPage);
+        model.addAttribute("currentOffset", userList.getNumber() * userList.getSize());
         return "users/admin/users-info";
     }
 }
