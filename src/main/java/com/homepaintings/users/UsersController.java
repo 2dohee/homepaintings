@@ -11,12 +11,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -85,15 +82,21 @@ public class UsersController {
     @GetMapping("/admin/users-info")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String usersInfo(@AuthenticatedUser Users user, Model model,
-                            @PageableDefault(size = 20, sort = "createdDateTime", direction = Sort.Direction.DESC) Pageable pageable) {
+                            @PageableDefault(size = 3) Pageable pageable,
+                            @RequestParam(defaultValue = "false") Boolean onlyEmailVerified,
+                            @RequestParam(defaultValue = "") String keywords,
+                            @RequestParam(defaultValue = "생성일") String sorting) {
         model.addAttribute("user", user);
-        Page<Users> userList = usersRepository.findByAuthorityOrderByCreatedDateTimeDesc(Authority.ROLE_USER, pageable);
+        Page<Users> userList = usersRepository.findUsersInfo(pageable, onlyEmailVerified, keywords, sorting);
         model.addAttribute("userList", userList);
         int currentFirstPage = userList.getNumber() / 10 * 10;
         int currentLastPage = Math.min(currentFirstPage + 9, userList.getTotalPages() - 1);
         model.addAttribute("currentFirstPage", currentFirstPage);
         model.addAttribute("currentLastPage", currentLastPage);
         model.addAttribute("currentOffset", userList.getNumber() * userList.getSize());
+        model.addAttribute("onlyEmailVerified", onlyEmailVerified);
+        model.addAttribute("keywords", keywords);
+        model.addAttribute("sorting", sorting);
         return "users/admin/users-info";
     }
 }
