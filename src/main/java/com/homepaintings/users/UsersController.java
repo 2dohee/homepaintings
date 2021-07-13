@@ -82,7 +82,7 @@ public class UsersController {
     @GetMapping("/admin/users-info")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String usersInfo(@AuthenticatedUser Users user, Model model,
-                            @PageableDefault(size = 3) Pageable pageable,
+                            @PageableDefault(size = 20) Pageable pageable,
                             @RequestParam(defaultValue = "false") Boolean onlyEmailVerified,
                             @RequestParam(defaultValue = "") String keywords,
                             @RequestParam(defaultValue = "생성일") String sorting) {

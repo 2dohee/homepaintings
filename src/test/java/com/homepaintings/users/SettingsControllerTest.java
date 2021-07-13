@@ -73,7 +73,7 @@ class SettingsControllerTest {
     @WithUser(TEST_EMAIL)
     @DisplayName("프로필 수정 - 잘못된 입력값1(중복 닉네임)")
     void signUp_with_wrong_value_1() throws Exception {
-        usersFactory.saveNewUser("test2@email.com", "test2");
+        usersFactory.saveNewUser("test2@email.com", "test2", false);
         mockMvc.perform(post("/settings/update-profile")
                     .param("nickname", "test2")
                     .param("phoneNumber", "")
