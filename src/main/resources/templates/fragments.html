@@ -175,12 +175,12 @@
 
 <div th:fragment="success-message" th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
     <strong>처리 완료!</strong> <span th:text="${successMessage}"></span>
-    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 
 <div th:fragment="error-message" th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
     <strong>처리 실패!</strong> <span th:text="${errorMessage}"></span>
-    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 
 <script th:fragment="form-validation" type="application/javascript">

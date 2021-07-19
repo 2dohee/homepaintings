@@ -16,6 +16,9 @@ public class Painting {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Enumerated(EnumType.STRING)
+    private PaintingType type;
+
     private int price;
 
     private int stock;
