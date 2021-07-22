@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<div th:replace="fragments.html :: head"></div>
+<body class="bg-light">
+<nav th:replace="fragments.html :: main-nav"></nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3 px-0">
+            <nav th:replace="fragments.html :: side-menu"></nav>
+        </div>
+        <div class="col-md-9 col-md-offset-3 mt-5">
+            <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="${'/admin/create-painting'}" class="btn btn-primary" role="button">상품 등록하기</a>
+            <form th:object="${paintingSearchForm}" th:action="@{/view-paintings}" method="get" class="form-inline row justify-content-center align-items-center mt-2">
+                <div class="col-md-2">
+                    <select id="paintingSearchFormType" th:field="*{type}" class="form-select" required>
+                        <option th:value="전체" th:text="전체" th:selected="*{type}"></option>
+                        <option th:each="p : ${paintingType}" th:value="${p}" th:text="${p}" th:selected="*{type}"></option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select th:field="*{sorting}" class="form-select" required>
+                        <option value="이름" th:selected="(*{sorting} == '이름')">이름 순으로</option>
+                        <option value="가격" th:selected="(*{sorting} == '가격')">가격 순으로</option>
+                        <option value="재고" th:selected="(*{sorting} == '재고')">재고 순으로</option>
+                        <option value="등록일" th:selected="(*{sorting} == '등록일')">등록일 순으로</option>
+                    </select>
+                </div>
+                <div class="form-check col-md-2">
+                    <input th:field="*{asc}" th:checked="*{asc}" id="paintingSearchFormAsc" class="form-check-input" type="checkbox" />
+                    <label class="form-check-label" for="paintingSearchFormAsc">역순으로</label>
+                </div>
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <input name="keywords" th:value="*{keywords}" class="form-control border-end-0 border" type="search" placeholder="Search..." maxlength="100" />
+                        <span class="input-group-append">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </form>
+            <div class="row justify-content-center py-4">
+                <div th:each="painting: ${paintingList}" class="col-md-4 mb-3">
+                    <a th:href="@{'/painting/' + ${painting.id}}" class="text-reset text-decoration-none">
+                        <div class="card border-dark shadow-sm h-100">
+                            <div class="card-header">
+                                <img class="card-img-top" th:if="${#strings.isEmpty(painting.image)}"
+                                     src="/images/no_image.png" width="125" alt="&times;" />
+                                <img class="card-img-top" th:if="${!#strings.isEmpty(painting.image)}"
+                                     th:src="${painting.image}" width="125" alt="&times;" />
+                            </div>
+                            <div class="card-body">
+                                <span th:text="${painting.description}"></span>
+                            </div>
+                            <div class="card-footer text-right">
+                                <h5 class="card-title"><span th:text="${painting.name}"></span></h5>
+                                <div class="card-text">
+                                    <div><span th:text="${painting.type.toString()}"></span></div>
+                                    <div><span class="price-format" th:text="${painting.price}"></span>원</div>
+                                    <div><span th:text="${painting.stock}"></span>개</div>
+                                </div>
+                                <div class="text-end">
+                                    <small class="text-muted date-time"><span th:text="${painting.updatedDateTime}"></span>(변경일)</small>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-9">
+                    <nav>
+                        <ul th:object="${paintingSearchForm}" class="pagination justify-content-between">
+                            <li class="page-item" th:classappend="${currentFirstPage < 10}? disabled">
+                                <a th:href="@{/view-paintings(page=${currentFirstPage - 10},type=*{type},keywords=*{keywords}
+                                ,sorting=*{sorting},asc=*{asc})}" class="page-link"><i class="fa fa-long-arrow-left" aria-hidden="true"></i></a>
+                            </li>
+                            <div class="d-inline-flex justify-content-center">
+                                <li class="page-item" th:classappend="${i == paintingList.getNumber()}? active"
+                                    th:each="i : ${#numbers.sequence(currentFirstPage, currentLastPage, 1)}">
+                                    <a th:href="@{/view-paintings(page=${i},type=*{type},keywords=*{keywords}
+                                ,sorting=*{sorting},asc=*{asc})}" class="page-link" th:text="${i + 1}"></a>
+                                </li>
+                            </div>
+                            <li class="page-item" th:classappend="${currentLastPage >= paintingList.getTotalPages() - 1}? disabled">
+                                <a th:href="@{/view-paintings(page=${currentLastPage + 1},type=*{type},keywords=*{keywords}
+                                ,sorting=*{sorting},asc=*{asc})}" class="page-link"><i class="fa fa-long-arrow-right" aria-hidden="true"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:include="fragments.html :: js-library" th:remove="tag"></div>
+<div th:include="fragments.html :: korea-date-time" th:remove="tag"></div>
+<script type="application/javascript">
+    $(function () {
+        let priceFormat = $('.price-format');
+        priceFormat.each((idx, el) => {
+            let $el = $(el);
+            $el.text($el.text().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+        });
+    });
+</script>
+</body>
+</html>
