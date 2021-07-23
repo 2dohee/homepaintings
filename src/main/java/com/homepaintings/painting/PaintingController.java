@@ -11,13 +11,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -72,5 +70,14 @@ public class PaintingController {
         model.addAttribute("currentLastPage", currentLastPage);
         model.addAttribute("currentOffset", paintingsList.getNumber() * paintingsList.getSize());
         return "painting/view-paintings";
+    }
+
+    @GetMapping("/painting/{id}")
+    public String viewPainting(@PathVariable Long id, @AuthenticatedUser Users user, Model model) {
+        model.addAttribute("user", user);
+        Optional<Painting> byId = paintingRepository.findById(id);
+        if (byId.isEmpty()) return "error";
+        model.addAttribute("painting", byId.get());
+        return "painting/details";
     }
 }

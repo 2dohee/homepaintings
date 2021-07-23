@@ -208,10 +208,10 @@
         $(function() {
             moment.locale('ko');
             $(".date-time").text(function (idx, dateTime) {
-                return moment(dateTime, "YYYY-MM-DD hh:mm a").format('LLL');
+                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").format('LLL');
             });
-            $(".simple-date-time").text(function(index, dateTime) {
-                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").format('YY-MM-DD hh:mm A');
+            $(".date").text(function(index, dateTime) {
+                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").format('LL');
             });
             $(".fromNow").text(function(index, dateTime) {
                 return moment(dateTime, "YYYY-MM-DD`T`hh:mm").fromNow();
@@ -219,6 +219,16 @@
         });
     </script>
 </div>
+
+<script th:fragment="price-with-comma" type="application/javascript">
+    $(function () {
+        let priceFormat = $('.price-format');
+        priceFormat.each((idx, el) => {
+            let $el = $(el);
+            $el.text($el.text().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+        });
+    });
+</script>
 
 <div th:fragment="js-library">
     <script src="/node_modules/jquery/dist/jquery.min.js"></script>

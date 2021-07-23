@@ -29,7 +29,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .mvcMatchers("/", "/sign-up", "/login").permitAll()
-                .mvcMatchers(HttpMethod.GET, "/validate-email-token", "/view-paintings").permitAll()
+                .mvcMatchers(HttpMethod.GET, "/validate-email-token", "/view-paintings", "/painting/*").permitAll()
                 .anyRequest().authenticated();
 
         http.formLogin()

@@ -12,7 +12,7 @@
             <nav th:replace="fragments.html :: side-menu"></nav>
         </div>
         <div class="col-md-9 col-md-offset-3 mt-5">
-            <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="${'/admin/create-painting'}" class="btn btn-primary" role="button">상품 등록하기</a>
+            <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{'/admin/create-painting'}" class="btn btn-primary" role="button">상품 등록하기</a>
             <form th:object="${paintingSearchForm}" th:action="@{/view-paintings}" method="get" class="form-inline row justify-content-center align-items-center mt-2">
                 <div class="col-md-2">
                     <select id="paintingSearchFormType" th:field="*{type}" class="form-select" required>
@@ -63,8 +63,8 @@
                                     <div><span class="price-format" th:text="${painting.price}"></span>원</div>
                                     <div><span th:text="${painting.stock}"></span>개</div>
                                 </div>
-                                <div class="text-end">
-                                    <small class="text-muted date-time"><span th:text="${painting.updatedDateTime}"></span>(변경일)</small>
+                                <div class="text-end text-muted">
+                                    <span th:text="${painting.updatedDateTime}" class="date"></span>(변경일)
                                 </div>
                             </div>
                         </div>
@@ -100,14 +100,6 @@
 
 <div th:include="fragments.html :: js-library" th:remove="tag"></div>
 <div th:include="fragments.html :: korea-date-time" th:remove="tag"></div>
-<script type="application/javascript">
-    $(function () {
-        let priceFormat = $('.price-format');
-        priceFormat.each((idx, el) => {
-            let $el = $(el);
-            $el.text($el.text().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-        });
-    });
-</script>
+<div th:replace="fragments.html :: price-with-comma"></div>
 </body>
 </html>

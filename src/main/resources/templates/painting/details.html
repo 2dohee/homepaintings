@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<div th:replace="fragments.html :: head"></div>
+<body class="bg-light">
+<nav th:replace="fragments.html :: main-nav"></nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3 px-0">
+            <nav th:replace="fragments.html :: side-menu"></nav>
+        </div>
+        <div class="col-md-9 col-md-offset-3 mt-5">
+            <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="${'/admin/create-painting'}" class="btn btn-primary" role="button">상품 등록하기</a>
+            <div class="row justify-content-center mb-5">
+                <div class="col-md-5">
+                    <img th:src="${#strings.isEmpty(painting.image) ? '/images/no_image.png' : painting.image}"
+                         alt="&times;" class="d-block w-100" />
+                </div>
+            </div>
+            <div class="row justify-content-center mb-5">
+                <div class="col-md-5">
+                    <h2>
+                        <span th:text="${painting.name}"></span>
+                        (<span th:text="${painting.type}" class="mr-4"></span>, <span th:text="${painting.stock > 0 ? '판매중' : '재고 없음'}"></span>)
+                    </h2>
+                    <div class="text-end">
+                        <h5><span class="price-format" th:text="${painting.price}"></span> 원</h5>
+                        <p class="text-muted mb-5">
+                            <span th:text="${painting.updatedDateTime}" class="date" ></span>(변경일)
+                        </p>
+                    </div>
+                    <span th:utext="${painting.description}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:include="fragments.html :: js-library" th:remove="tag"></div>
+<div th:include="fragments.html :: korea-date-time" th:remove="tag"></div>
+<div th:replace="fragments.html :: price-with-comma"></div>
+</body>
+</html>
