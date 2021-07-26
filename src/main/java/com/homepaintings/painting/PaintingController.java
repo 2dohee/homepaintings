@@ -45,8 +45,8 @@ public class PaintingController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String createPainting(@AuthenticatedUser Users user, Model model, @Valid PaintingForm paintingForm, Errors errors,
                                  RedirectAttributes attributes) {
-        model.addAttribute("user", user);
         if (errors.hasErrors()) {
+            model.addAttribute("user", user);
             model.addAttribute("errorMessage", "상품을 등록하지 못했습니다.");
             model.addAttribute("paintingType", Stream.of(PaintingType.values()).map(Enum::name).collect(Collectors.toList()));
             return "painting/admin/create-painting";
