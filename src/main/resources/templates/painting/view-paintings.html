@@ -12,6 +12,7 @@
             <nav th:replace="fragments.html :: side-menu"></nav>
         </div>
         <div class="col-md-9 col-md-offset-3 mt-5">
+            <div th:replace="fragments.html :: success-message"></div>
             <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{'/admin/create-painting'}" class="btn btn-primary" role="button">상품 등록하기</a>
             <form th:object="${paintingSearchForm}" th:action="@{/view-paintings}" method="get" class="form-inline row justify-content-center align-items-center mt-2">
                 <div class="col-md-2">
@@ -54,7 +55,7 @@
                                      th:src="${painting.image}" width="125" alt="&times;" />
                             </div>
                             <div class="card-body">
-                                <span th:text="${painting.description}"></span>
+                                <span th:utext="${painting.description}"></span>
                             </div>
                             <div class="card-footer text-right">
                                 <h5 class="card-title"><span th:text="${painting.name}"></span></h5>

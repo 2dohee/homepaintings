@@ -12,7 +12,31 @@
             <nav th:replace="fragments.html :: side-menu"></nav>
         </div>
         <div class="col-md-9 col-md-offset-3 mt-5">
-            <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="${'/admin/create-painting'}" class="btn btn-primary" role="button">상품 등록하기</a>
+            <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{'/admin/update-painting/' + ${id}}" class="btn btn-primary" role="button">상품 수정하기</a>
+            <div sec:authorize="hasRole('ROLE_ADMIN')">
+                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#reconfirmPaintingDelete">상품 삭제하기</button>
+                <div class="modal fade" id="reconfirmPaintingDelete" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">재확인</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                            <div class="modal-body">
+                                정말로 삭제하시겠습니까?
+                            </div>
+                            <div class="modal-footer">
+                                <form th:action="@{'/admin/delete-painting/' + ${id}}" method="post">
+                                    <div class="form-group">
+                                        <button class="btn btn-primary" type="submit" >예</button>
+                                    </div>
+                                </form>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">아니오</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="row justify-content-center mb-5">
                 <div class="col-md-5">
                     <img th:src="${#strings.isEmpty(painting.image) ? '/images/no_image.png' : painting.image}"
