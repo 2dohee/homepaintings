@@ -83,6 +83,7 @@ class PaintingControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("painting/admin/create-painting"))
                 .andExpect(model().attributeExists("user", "errorMessage", "paintingType"))
+                .andExpect(model().hasErrors())
                 .andExpect(authenticated().withAuthorities(List.of(new SimpleGrantedAuthority(Authority.ROLE_ADMIN.toString()))));
     }
 
@@ -102,6 +103,7 @@ class PaintingControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("painting/admin/create-painting"))
                 .andExpect(model().attributeExists("user", "errorMessage", "paintingType"))
+                .andExpect(model().hasErrors())
                 .andExpect(authenticated().withAuthorities(List.of(new SimpleGrantedAuthority(Authority.ROLE_ADMIN.toString()))));
 
         assertFalse(paintingRepository.existsByName("테스트그림"));
@@ -157,6 +159,113 @@ class PaintingControllerTest {
         mockMvc.perform(get("/painting/1"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("error"));
+    }
+
+    @Test
+    @WithUser(value = TEST_EMAIL, authority = Authority.ROLE_ADMIN)
+    @DisplayName("관리자 - 상품 내용 수정 페이지가 성공적으로 뜨는지 확인")
+    void updatePaintingForm() throws Exception {
+        Painting painting = paintingFactory.saveNewPainting("painting1", PaintingType.LANDSCAPE, 5000, 50);
+        Map<String, Object> model = mockMvc.perform(get("/admin/update-painting/" + painting.getId()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("painting/admin/update-painting"))
+                .andExpect(model().attributeExists("user", "paintingForm", "paintingType"))
+                .andExpect(authenticated().withAuthorities(List.of(new SimpleGrantedAuthority(Authority.ROLE_ADMIN.toString()))))
+                .andReturn().getModelAndView().getModel();
+        assertEquals(((PaintingForm) model.get("paintingForm")).getName(), painting.getName());
+    }
+
+    @Test
+    @WithUser(value = TEST_EMAIL, authority = Authority.ROLE_ADMIN)
+    @DisplayName("관리자 - 없는 상품 내용 수정 페이지에 접근")
+    void updatePainting_no_value() throws Exception {
+        mockMvc.perform(get("/admin/update-painting/1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("error"))
+                .andExpect(authenticated().withAuthorities(List.of(new SimpleGrantedAuthority(Authority.ROLE_ADMIN.toString()))));
+        mockMvc.perform(post("/admin/update-painting/1")
+                    .param("name", "1")
+                    .param("type", PaintingType.FIGURE.toString())
+                    .param("price", "1")
+                    .param("stock", "1")
+                    .param("image", "")
+                    .param("description", "1")
+                    .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("error"))
+                .andExpect(authenticated().withAuthorities(List.of(new SimpleGrantedAuthority(Authority.ROLE_ADMIN.toString()))));
+    }
+
+    @Test
+    @WithUser(value = TEST_EMAIL, authority = Authority.ROLE_ADMIN)
+    @DisplayName("관리자 - 상품 내용 수정")
+    void updatePainting() throws Exception {
+        Painting painting = paintingFactory.saveNewPainting("painting1", PaintingType.LANDSCAPE, 5000, 50);
+        mockMvc.perform(post("/admin/update-painting/" + painting.getId())
+                    .param("name", painting.getName()) // 바꾸지 않더라도 중복 검사를 통과함
+                    .param("type", PaintingType.FIGURE.toString())
+                    .param("price", "50000")
+                    .param("stock", "500")
+                    .param("image", "")
+                    .param("description", "설명")
+                    .with(csrf()))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/update-painting/" + painting.getId()))
+                .andExpect(flash().attributeExists("successMessage"))
+                .andExpect(authenticated().withAuthorities(List.of(new SimpleGrantedAuthority(Authority.ROLE_ADMIN.toString()))));
+        assertEquals(painting.getName(), painting.getName());
+        assertEquals(painting.getType(), PaintingType.FIGURE);
+        assertEquals(painting.getPrice(), 50000);
+        assertEquals(painting.getStock(), 500);
+        assertEquals(painting.getDescription(), "설명");
+    }
+
+    @Test
+    @WithUser(value = TEST_EMAIL, authority = Authority.ROLE_ADMIN)
+    @DisplayName("관리자 - 상품 내용 수정 - 잘못된 입력값(상품명 중복)")
+    void updatePainting_with_wrong_value() throws Exception {
+        Painting painting1 = paintingFactory.saveNewPainting("painting1", PaintingType.LANDSCAPE, 5000, 50);
+        Painting painting2 = paintingFactory.saveNewPainting("painting2", PaintingType.LANDSCAPE, 5000, 50);
+        Map<String, Object> model = mockMvc.perform(post("/admin/update-painting/" + painting1.getId())
+                .param("name", painting2.getName()) // 중복
+                .param("type", PaintingType.FIGURE.toString())
+                .param("price", "50000")
+                .param("stock", "500")
+                .param("image", "")
+                .param("description", "설명")
+                .with(csrf()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(view().name("painting/admin/update-painting"))
+                .andExpect(model().attributeExists("user", "errorMessage", "paintingType", "paintingForm"))
+                .andExpect(authenticated().withAuthorities(List.of(new SimpleGrantedAuthority(Authority.ROLE_ADMIN.toString()))))
+                .andReturn().getModelAndView().getModel();
+        assertEquals(((PaintingForm)model.get("paintingForm")).getName(), painting1.getName()); // 바뀌지 않음
+    }
+
+    @Test
+    @WithUser(value = TEST_EMAIL, authority = Authority.ROLE_ADMIN)
+    @DisplayName("관리자 - 상품 삭제")
+    void deletePainting() throws Exception {
+        Painting painting = paintingFactory.saveNewPainting("painting1", PaintingType.LANDSCAPE, 5000, 50);
+        mockMvc.perform(post("/admin/delete-painting/" + painting.getId()).with(csrf()))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/view-paintings"))
+                .andExpect(flash().attributeExists("successMessage"))
+                .andExpect(authenticated().withAuthorities(List.of(new SimpleGrantedAuthority(Authority.ROLE_ADMIN.toString()))));
+        assertTrue(paintingRepository.findById(painting.getId()).isEmpty()); // 삭제됨
+    }
+
+    @Test
+    @WithUser(value = TEST_EMAIL, authority = Authority.ROLE_ADMIN)
+    @DisplayName("관리자 - 삭제하려는 상품이 없는 경우")
+    void deletePainting_no_value() throws Exception {
+        mockMvc.perform(post("/admin/delete-painting/1").with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("error"))
+                .andExpect(authenticated().withAuthorities(List.of(new SimpleGrantedAuthority(Authority.ROLE_ADMIN.toString()))));
     }
 
 }
