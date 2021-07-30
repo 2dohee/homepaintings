@@ -4,6 +4,8 @@
 
 <head th:fragment="head">
     <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Welcome homepaintings!</title>
     <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css" />
@@ -226,6 +228,16 @@
         priceFormat.each((idx, el) => {
             let $el = $(el);
             $el.text($el.text().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+        });
+    });
+</script>
+
+<script th:fragment="ajax-csrf-token" type="application/javascript" th:inline="javascript">
+    $(function () {
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+        $(document).ajaxSend(function (e, xhr, options) {
+            xhr.setRequestHeader(header, token);
         });
     });
 </script>

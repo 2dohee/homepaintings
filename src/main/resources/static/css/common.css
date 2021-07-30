@@ -52,3 +52,15 @@ textarea,
     text-transform: uppercase;
     letter-spacing: 10px;
 }
+
+/* Chrome, Safari, Edge, Opera */
+.hidden-arrow::-webkit-outer-spin-button,
+.hidden-arrow::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+.hidden-arrow[type=number] {
+    -moz-appearance: textfield;
+}
