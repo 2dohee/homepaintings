@@ -27,6 +27,8 @@ public class Cart {
 
     private int quantity;
 
+    private long totalPrice;
+
     private LocalDateTime createdDateTime;
 
 }

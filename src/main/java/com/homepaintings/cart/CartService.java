@@ -17,8 +17,8 @@ public class CartService {
 
     public void addToCart(Users user, Painting painting, int quantity) {
         Cart newCart = Cart.builder()
-                .user(user).painting(painting).quantity(quantity).createdDateTime(LocalDateTime.now())
-                .build();
+                .user(user).painting(painting).quantity(quantity).totalPrice((long) painting.getPrice() * quantity)
+                .createdDateTime(LocalDateTime.now()).build();
         cartRepository.save(newCart);
     }
 }
