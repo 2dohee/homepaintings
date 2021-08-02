@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="fragments.html :: head"></div>
+<body class="bg-light">
+<nav th:replace="fragments.html :: main-nav"></nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3 px-0">
+            <nav th:replace="fragments.html :: side-menu"></nav>
+        </div>
+        <div class="col-md-9 col-md-offset-3 mt-5">
+            <div class="py-4 text-center">
+                <h4 class="mb-4 mt-1 text-center settings-title">장바구니 목록</h4>
+            </div>
+            <hr />
+            <div th:each="cart : ${cartList}" class="card">
+                <div class="row g-0">
+                    <div class="col-md-5">
+                        <img th:src="${#strings.isEmpty(cart.painting.image) ? '/images/no_image.png' : cart.painting.image}"
+                             class="card-img w-25" alt="&times;" />
+                    </div>
+                    <div class="col-md-7">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <span th:text="${cart.painting.name}"></span>
+                                (<span th:text="${cart.painting.type}"></span>)
+                            </h5>
+                            <p class="card-text">
+                                수량: <span class="price-format" th:text="${cart.quantity}"></span>
+                            </p>
+                            <p class="card-text">
+                                전체 가격: <span class="price-format" th:text="${cart.painting.price * cart.quantity}"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:include="fragments.html :: js-library" th:remove="tag"></div>
+<div th:replace="fragments.html :: price-with-comma"></div>
+
+</body>
+</html>

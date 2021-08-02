@@ -37,4 +37,12 @@ public class CartController {
         return ResponseEntity.ok().body("카트에 물건을 담았습니다.");
     }
 
+    @GetMapping("/list")
+    public String viewCartList(@AuthenticatedUser Users user, Model model) {
+        List<Cart> cartList = cartRepository.findByUserOrderByCreatedDateTimeDesc(user);
+        model.addAttribute("user", user);
+        model.addAttribute("cartList", cartList);
+        return "cart/view-cart-list";
+    }
+
 }

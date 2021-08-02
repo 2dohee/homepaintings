@@ -4,11 +4,12 @@ import com.homepaintings.painting.Painting;
 import com.homepaintings.users.Users;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.time.LocalDateTime;
+
+@NamedEntityGraph(name = "Cart.withPainting", attributeNodes = {
+        @NamedAttributeNode("painting")
+})
 
 @Entity
 @Getter @Setter @EqualsAndHashCode(of ="id")
