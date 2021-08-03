@@ -3,6 +3,9 @@ package com.homepaintings.cart;
 import com.homepaintings.users.Users;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -12,5 +15,10 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 
     @EntityGraph("Cart.withPainting")
     List<Cart> findByUserOrderByCreatedDateTimeDesc(Users user);
+
+    @Transactional
+    @Modifying
+    @Query("delete from Cart c where c.id in :ids and c.user = :user")
+    void deleteAllByIdAndUserInQuery(@Param("ids") List<Long> ids, @Param("user") Users user);
 
 }

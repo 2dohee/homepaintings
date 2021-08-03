@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @Service
 @Transactional
@@ -20,5 +21,9 @@ public class CartService {
                 .user(user).painting(painting).quantity(quantity).totalPrice((long) painting.getPrice() * quantity)
                 .createdDateTime(LocalDateTime.now()).build();
         cartRepository.save(newCart);
+    }
+
+    public void remove(ArrayList<Long> cartIdList, Users user) {
+        cartRepository.deleteAllByIdAndUserInQuery(cartIdList, user);
     }
 }

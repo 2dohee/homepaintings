@@ -18,6 +18,7 @@
             <div th:each="cart : ${cartList}" class="card">
                 <div class="row g-0">
                     <div class="col-md-5">
+                        <input type="checkbox" class="form-check-input cart-check-box" th:attr="data-cartId=${cart.id}" />
                         <img th:src="${#strings.isEmpty(cart.painting.image) ? '/images/no_image.png' : cart.painting.image}"
                              class="card-img w-25" alt="&times;" />
                     </div>
@@ -37,12 +38,47 @@
                     </div>
                 </div>
             </div>
+            <div class="row justify-content-between g-0 mt-3">
+                <button id="orderBtn" class="btn btn-primary col-md-3">주문하기</button>
+                <button id="removeBtn" class="btn btn-danger col-md-3">제거하기</button>
+            </div>
         </div>
     </div>
 </div>
 
 <div th:include="fragments.html :: js-library" th:remove="tag"></div>
 <div th:replace="fragments.html :: price-with-comma"></div>
+<div th:replace="fragments.html :: ajax-csrf-token"></div>
+<script type="application/javascript">
+    $(function () {
+        $("#removeBtn").click(function () {
+            let confirmValue = confirm("정말로 삭제하시겠습니까?");
+
+            if (confirmValue) {
+                let cartIdList = [];
+
+                $("input.cart-check-box:checked").each(function () {
+                    cartIdList.push($(this).attr("data-cartId"));
+                });
+
+                $.ajax({
+                    dataType: "text",
+                    contentType: "application/json; charset=utf-8",
+                    method: "POST",
+                    url: "/cart/remove",
+                    data: JSON.stringify({
+                        'cartIdList': cartIdList
+                    }),
+                    success: function () {
+                        location.href = "/cart/list"
+                    }
+                }).done(function (data, status) {
+                    if (data !== null) alert(data);
+                });
+            }
+        });
+    });
+</script>
 
 </body>
 </html>
