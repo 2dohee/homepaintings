@@ -1,9 +1,11 @@
 package com.homepaintings.users;
 
+import com.homepaintings.order.Order;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -44,6 +46,9 @@ public class Users {
 
     @Enumerated(EnumType.STRING)
     private Authority authority; // 권한은 1개만 가질 수 있음
+
+    @OneToMany(mappedBy = "user")
+    private List<Order> orderList;
 
     public void generateEmailToken() {
         this.emailToken = UUID.randomUUID().toString() ;
