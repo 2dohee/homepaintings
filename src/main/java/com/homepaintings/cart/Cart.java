@@ -25,9 +25,9 @@ public class Cart {
     @ManyToOne
     private Painting painting;
 
-    private int quantity;
+    private Integer quantity;
 
-    private long totalPrice;
+    private Long totalPrice;
 
     private LocalDateTime createdDateTime;
 

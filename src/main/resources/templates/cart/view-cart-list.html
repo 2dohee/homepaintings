@@ -39,7 +39,8 @@
                 </div>
             </div>
             <div class="row justify-content-between g-0 mt-3">
-                <button id="orderBtn" class="btn btn-primary col-md-3">주문하기</button>
+                <form id="orderForm" th:action="@{/create-order}" method="get"></form>
+                <button type="button" id="orderBtn" class="btn btn-primary col-md-3">주문하기</button>
                 <button id="removeBtn" class="btn btn-danger col-md-3">제거하기</button>
             </div>
         </div>
@@ -75,6 +76,33 @@
                 }).done(function (data, status) {
                     if (data !== null) alert(data);
                 });
+            }
+        });
+    });
+</script>
+<script type="application/javascript">
+    $(function () {
+        let $orderForm = $("#orderForm");
+
+        $orderForm.submit(function (e) {
+            e.preventDefault();
+        });
+
+        $("#orderBtn").click(function () {
+            let cartIdList = [];
+
+            $("input.cart-check-box:checked").each(function () {
+                cartIdList.push($(this).attr("data-cartId"));
+            });
+
+            if (cartIdList.length === 0) {
+                alert("주문할 물품들을 체크해주세요.");
+            } else {
+                let input = $("<input>")
+                    .attr("type", "hidden")
+                    .attr("name", "cartIdList").val(cartIdList);
+                $orderForm.append($(input));
+                $orderForm[0].submit();
             }
         });
     });

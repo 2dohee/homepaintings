@@ -16,9 +16,12 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     @EntityGraph("Cart.withPainting")
     List<Cart> findByUserOrderByCreatedDateTimeDesc(Users user);
 
+    @EntityGraph("Cart.withPainting")
+    List<Cart> findByIdInAndUserOrderByCreatedDateTimeDesc(List<Long> ids, Users user);
+
     @Transactional
     @Modifying
     @Query("delete from Cart c where c.id in :ids and c.user = :user")
-    void deleteAllByIdAndUserInQuery(@Param("ids") List<Long> ids, @Param("user") Users user);
+    void deleteAllByIdInAndUserQuery(@Param("ids") List<Long> ids, @Param("user") Users user);
 
 }

@@ -24,6 +24,6 @@ public class CartService {
     }
 
     public void remove(ArrayList<Long> cartIdList, Users user) {
-        cartRepository.deleteAllByIdAndUserInQuery(cartIdList, user);
+        cartRepository.deleteAllByIdInAndUserQuery(cartIdList, user);
     }
 }

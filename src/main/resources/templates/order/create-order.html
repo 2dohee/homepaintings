@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="fragments.html :: head"></div>
+<body class="bg-light">
+<nav th:replace="fragments.html :: main-nav"></nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3 px-0">
+            <nav th:replace="fragments.html :: side-menu"></nav>
+        </div>
+        <div class="col-md-9 col-md-offset-3 mt-5">
+            <div class="py-4 text-center">
+                <h4 class="mb-4 mt-1 text-center settings-title">주문하기</h4>
+            </div>
+            <hr />
+            <div th:each="cart : ${cartList}" class="card mx-3">
+                <div class="row g-0">
+                    <div class="col-md-5">
+                        <img th:src="${#strings.isEmpty(cart.painting.image) ? '/images/no_image.png' : cart.painting.image}"
+                             class="card-img w-25" alt="&times;" />
+                    </div>
+                    <div class="col-md-7">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <span th:text="${cart.painting.name}"></span>
+                                (<span th:text="${cart.painting.type}"></span>)
+                            </h5>
+                            <p class="card-text">
+                                수량: <span class="price-format" th:text="${cart.quantity}"></span>
+                            </p>
+                            <p class="card-text">
+                                전체 가격: <span class="price-format" th:text="${cart.totalPrice}"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-between g-0 mt-5">
+                <form th:object="${orderForm}" th:action="@{/create-order}" method="post" class="col-md-7 p-3">
+                    <div class="form-group">
+                        <input th:field="*{cartIdList}" type="hidden" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="orderReceiver">수령인</label>
+                        <input id="orderReceiver" type="text" th:field="*{receiver}" class="form-control" minlength="1" maxlength="100" placeholder="수령인을 입력해 주세요." required/>
+                        <small class="invalid-feedback">올바른 수령인을 입력하세요.</small>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="orderPhoneNumber">연락처</label>
+                        <input id="orderPhoneNumber" type="number" th:field="*{phoneNumber}" class="form-control" minlength="10" maxlength="11" placeholder="(-) 없이 입력해 주세요." required/>
+                        <small class="invalid-feedback">올바른 전화번호를 입력하세요.</small>
+                        <small class="form-text text-danger" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}">PhoneNumber Error</small>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="orderAddress1">시/군/구</label>
+                        <input id="orderAddress1" type="text" th:field="*{address1}" class="form-control" placeholder="주소를 입력해 주세요." required/>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="orderAddress2">읍/면/동</label>
+                        <input id="orderAddress2" type="text" th:field="*{address2}" class="form-control" placeholder="주소를 입력해 주세요." required/>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="orderAddress3">나머지 주소</label>
+                        <input id="orderAddress3" type="text" th:field="*{address3}" class="form-control" placeholder="주소를 입력해 주세요." required/>
+                    </div>
+                    <div class="form-group mt-3 text-end">
+                        <button type="submit" class="btn btn-primary">주문하기</button>
+                    </div>
+                </form>
+                <div class="col-md-3 p-3 mt-3">
+                    <div class="card text-end">
+                        <div class="card-body card-text">
+                            <div th:each="cart : ${cartList}">+ <span th:text="${cart.totalPrice}"></span></div>
+                        </div>
+                        <div class="card-footer font-weight-bold">
+                            총 합계: <span class="price-format" th:text="${#aggregates.sum(cartList.![totalPrice])}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:include="fragments.html :: js-library" th:remove="tag"></div>
+<div th:replace="fragments.html :: price-with-comma"></div>
+
+</body>
+</html>

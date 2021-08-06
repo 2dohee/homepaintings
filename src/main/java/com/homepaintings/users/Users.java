@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,7 +49,7 @@ public class Users {
     private Authority authority; // 권한은 1개만 가질 수 있음
 
     @OneToMany(mappedBy = "user")
-    private List<Order> orderList;
+    private List<Order> orderList = new ArrayList<>();
 
     public void generateEmailToken() {
         this.emailToken = UUID.randomUUID().toString() ;
@@ -57,5 +58,10 @@ public class Users {
 
     public boolean isValidEmailToken(String token) {
         return this.emailToken.equals(token) && this.emailTokenGeneratedDateTime.plusMinutes(10).isAfter(LocalDateTime.now());
+    }
+
+    public void addOrder(Order order) {
+        this.orderList.add(order);
+        order.setUser(this);
     }
 }

@@ -22,6 +22,6 @@ public class OrderDetails {
     @ManyToOne
     private Painting painting;
 
-    private int quantity;
+    private Integer quantity;
 
 }
