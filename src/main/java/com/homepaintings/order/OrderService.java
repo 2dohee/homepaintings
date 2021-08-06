@@ -25,6 +25,7 @@ public class OrderService {
         Order order = modelMapper.map(orderForm, Order.class);
         order.setTotalPrice(cartList.stream().mapToLong(Cart::getTotalPrice).sum());
         order.setCreatedDateTime(LocalDateTime.now());
+        order.setDeliveryStatus(DeliveryStatus.READY);
         order.addAllDetails(createOrderDetailsList(cartList));
         usersRepository.findByEmail(user.getEmail()).get().addOrder(order); // lazy loading 을 위해 user 의 상태를 persistent 로 전환
         orderRepository.save(order);

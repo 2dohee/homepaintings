@@ -42,6 +42,9 @@ public class Order {
 
     private LocalDateTime createdDateTime;
 
+    @Enumerated(EnumType.STRING)
+    private DeliveryStatus deliveryStatus;
+
     public void addAllDetails(List<OrderDetails> orderDetailsList) {
         this.orderDetailsList.addAll(orderDetailsList);
         orderDetailsList.forEach(orderDetails -> orderDetails.setOrder(this));
