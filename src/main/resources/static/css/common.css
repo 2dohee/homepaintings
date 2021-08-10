@@ -64,3 +64,27 @@ textarea,
 .hidden-arrow[type=number] {
     -moz-appearance: textfield;
 }
+
+.order-summary p > span:first-of-type,
+.order-details p > span:first-of-type {
+    display: inline-block;
+    width: 100px;
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+.order-summary p span:nth-child(2),
+.order-details p span:nth-child(2) {
+    font-size: 1rem;
+}
+
+.order-details-address,
+.order-details-products {
+    position: relative;
+}
+
+.order-details-address span:nth-child(n + 3),
+.order-details-products span:nth-child(n + 3) {
+    display: inline-block;
+    margin-left: 100px;
+}

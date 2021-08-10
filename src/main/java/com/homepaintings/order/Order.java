@@ -17,7 +17,7 @@ public class Order {
     @Id @GeneratedValue
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
     @Column(nullable = false)

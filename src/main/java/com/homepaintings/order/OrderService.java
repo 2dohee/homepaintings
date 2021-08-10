@@ -29,7 +29,6 @@ public class OrderService {
         order.addAllDetails(createOrderDetailsList(cartList));
         usersRepository.findByEmail(user.getEmail()).get().addOrder(order); // lazy loading 을 위해 user 의 상태를 persistent 로 전환
         orderRepository.save(order);
-        System.out.println();
     }
 
     private List<OrderDetails> createOrderDetailsList(List<Cart> cartList) {

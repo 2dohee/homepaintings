@@ -36,6 +36,8 @@
                     <i class="fa fa-address-book" aria-hidden="true"></i> 내 정보 변경</a>
                 <a class="dropdown-item" th:href="@{/cart/list}">
                     <i class="fa fa-shopping-cart" aria-hidden="true"></i> 장바구니</a>
+                <a class="dropdown-item" th:href="@{/order/list}">
+                    <i class="fa fa-truck" aria-hidden="true"></i> 주문정보</a>
                 <a sec:authorize="hasRole('ROLE_ADMIN')" class="dropdown-item" th:href="@{/admin/users-info}">
                     <i class="fa fa-eye" aria-hidden="true"></i> 유저 관리(관리자 페이지)</a>
                 <form th:action="@{/logout}" method="post">

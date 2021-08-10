@@ -3,10 +3,11 @@ package com.homepaintings.order;
 import com.homepaintings.painting.Painting;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
+
+@NamedEntityGraph(name = "OrderDetails.withPainting", attributeNodes = {
+        @NamedAttributeNode("painting")
+})
 
 @Entity
 @Getter @Setter @EqualsAndHashCode(of ="id")

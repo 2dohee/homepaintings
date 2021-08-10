@@ -19,9 +19,9 @@ public class Painting {
     @Enumerated(EnumType.STRING)
     private PaintingType type;
 
-    private int price;
+    private Integer price;
 
-    private int stock;
+    private Integer stock;
 
     @Lob
     private String image;
