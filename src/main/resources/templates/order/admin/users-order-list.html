@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="fragments.html :: head"></div>
+<body class="bg-light">
+<nav th:replace="fragments.html :: main-nav"></nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3 px-0">
+            <nav th:replace="fragments.html :: side-menu"></nav>
+        </div>
+        <div class="col-md-9 col-md-offset-3 mt-5">
+            <div class="py-4 text-center">
+                <h4 class="mb-4 mt-1 text-center settings-title">주문 관리</h4>
+            </div>
+            <hr />
+            <form th:action="@{/admin/order/list}" method="get" class="form-inline row justify-content-center align-items-center mt-2">
+                <div class="col-md-2">
+                    <select name="deliveryStatus" class="form-select" required>
+                        <option value="READY" th:selected="${deliveryStatus eq 'READY'}">준비중</option>
+                        <option value="SHIPPING" th:selected="${deliveryStatus eq 'SHIPPING'}">배송중</option>
+                        <option value="COMPLETED" th:selected="${deliveryStatus eq 'COMPLETED'}">배송 완료</option>
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <input name="keywords" th:value="${keywords}" class="form-control border-end-0 border" type="search" placeholder="Search..." maxlength="100" />
+                        <span class="input-group-append">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </form>
+            <div class="row justify-content-center py-4">
+                <div class="col-md-9">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">수령인</th>
+                                <th scope="col">결제금액</th>
+                                <th scope="col">결제일</th>
+                                <th scope="col">연락처</th>
+                                <th scope="col">주소</th>
+                                <th scope="col">유저정보(이메일-닉네임)</th>
+                                <th scope="col">상품정보(상품명-수량)</th>
+                            </tr>
+                        </thead>
+                        <tbody th:each="order: ${orderList}">
+                            <tr>
+                                <th scope="row" th:text="${currentOffset + orderStat.count}"></th>
+                                <td th:text="${order.receiver}"></td>
+                                <td><span th:text="${order.totalPrice}" class="price-format"></span>원</td>
+                                <td th:text="${order.createdDateTime}" class="date-time"></td>
+                                <td th:text="${order.phoneNumber}"></td>
+                                <td>
+                                    <span th:text="${order.address1}"></span><br />
+                                    <span th:text="${order.address2}"></span><br />
+                                    <span th:text="${order.address3}"></span>
+                                </td>
+                                <td>
+                                    <span th:text="${order.user.email}"></span><br />
+                                    <span th:text="${order.user.nickname}"></span>
+                                </td>
+                                <td>
+                                    <div th:each="orderDetails: ${order.orderDetailsList}">
+                                        <span th:text="${orderDetails.painting.name}"></span> - <span th:text="${orderDetails.quantity}"></span>개
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-9">
+                    <nav>
+                        <ul class="pagination justify-content-between">
+                            <li class="page-item" th:classappend="${currentFirstPage < 10}? disabled">
+                                <a th:href="@{/admin/order/list(page=${currentFirstPage - 10},deliveryStatus=${deliveryStatus},
+                                keywords=${keywords})}" class="page-link"><i class="fa fa-long-arrow-left" aria-hidden="true"></i></a>
+                            </li>
+                            <div class="d-inline-flex justify-content-center">
+                                <li class="page-item" th:classappend="${i == orderList.getNumber()}? active"
+                                    th:each="i : ${#numbers.sequence(currentFirstPage, currentLastPage, 1)}">
+                                    <a th:href="@{/admin/order/list(page=${i},deliveryStatus=${deliveryStatus},
+                                    keywords=${keywords})}" class="page-link" th:text="${i + 1}"></a>
+                                </li>
+                            </div>
+                            <li class="page-item" th:classappend="${currentLastPage >= orderList.getTotalPages() - 1}? disabled">
+                                <a th:href="@{/admin/order/list(page=${currentLastPage + 1},deliveryStatus=${deliveryStatus},
+                                keywords=${keywords})}" class="page-link"><i class="fa fa-long-arrow-right" aria-hidden="true"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:include="fragments.html :: js-library" th:remove="tag"></div>
+<div th:include="fragments.html :: korea-date-time" th:remove="tag"></div>
+<div th:replace="fragments.html :: price-with-comma"></div>
+
+</body>
+</html>

@@ -7,7 +7,12 @@ import com.homepaintings.painting.Painting;
 import com.homepaintings.users.Users;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -59,15 +64,35 @@ public class OrderController {
 
     @GetMapping("/order/list")
     public String viewOrderList(@RequestParam(defaultValue = "ALL") String orderStatus, @AuthenticatedUser Users user, Model model) {
-        List<Order> orderList = orderRepository.findByUserOrderByCreatedDateTimeDesc(user);
+        List<Orders> orderList = orderRepository.findByUserOrderByCreatedDateTimeDesc(user);
         classifyOrderList(orderList, orderStatus, model);
         model.addAttribute("user", user);
         return "order/view-order-list";
     }
 
-    private void classifyOrderList(List<Order> orderList, String orderStatus, Model model) {
-        ArrayList<Order> completedList = new ArrayList<>();
-        ArrayList<Order> uncompletedList = new ArrayList<>();
+    @GetMapping("/admin/order/list")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public String viewUsersOrderList(@PageableDefault(size = 10, sort = "createdDateTime", direction = Sort.Direction.DESC) Pageable pageable,
+                                     @RequestParam(defaultValue = "READY") String deliveryStatus,
+                                     @RequestParam(defaultValue = "") String keywords,
+                                     @AuthenticatedUser Users user, Model model) {
+        model.addAttribute("user", user);
+        Page<Orders> orderList = orderRepository.findUsersOrder(pageable, deliveryStatus, keywords);
+
+        int currentFirstPage = orderList.getNumber() / 10 * 10;
+        int currentLastPage = Math.min(currentFirstPage + 9, orderList.getTotalPages() - 1);
+        model.addAttribute("orderList", orderList);
+        model.addAttribute("currentFirstPage", currentFirstPage);
+        model.addAttribute("currentLastPage", currentLastPage);
+        model.addAttribute("currentOffset", orderList.getNumber() * orderList.getSize());
+        model.addAttribute("keywords", keywords);
+        model.addAttribute("deliveryStatus", deliveryStatus);
+        return "order/admin/users-order-list";
+    }
+
+    private void classifyOrderList(List<Orders> orderList, String orderStatus, Model model) {
+        ArrayList<Orders> completedList = new ArrayList<>();
+        ArrayList<Orders> uncompletedList = new ArrayList<>();
 
         orderList.forEach(o -> {
             if (o.getDeliveryStatus().equals(DeliveryStatus.COMPLETED)) completedList.add(o);

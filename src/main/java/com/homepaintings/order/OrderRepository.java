@@ -7,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Transactional(readOnly = true)
-public interface OrderRepository extends JpaRepository<Order, Long> {
+public interface OrderRepository extends JpaRepository<Orders, Long>, OrderRepositoryExtension {
 
-    List<Order> findByUserOrderByCreatedDateTimeDesc(Users user);
+    List<Orders> findByUserOrderByCreatedDateTimeDesc(Users user);
 
 }

@@ -18,7 +18,7 @@ public class OrderDetails {
     private Long id;
 
     @ManyToOne
-    private Order order;
+    private Orders order;
 
     @ManyToOne
     private Painting painting;

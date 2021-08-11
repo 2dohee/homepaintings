@@ -40,6 +40,8 @@
                     <i class="fa fa-truck" aria-hidden="true"></i> 주문정보</a>
                 <a sec:authorize="hasRole('ROLE_ADMIN')" class="dropdown-item" th:href="@{/admin/users-info}">
                     <i class="fa fa-eye" aria-hidden="true"></i> 유저 관리(관리자 페이지)</a>
+                <a sec:authorize="hasRole('ROLE_ADMIN')" class="dropdown-item" th:href="@{/admin/order/list}">
+                    <i class="fa fa-eye" aria-hidden="true"></i> 주문 관리(관리자 페이지)</a>
                 <form th:action="@{/logout}" method="post">
                     <button type="submit" class="dropdown-item btn btn-link"><i class="fa fa-sign-out" aria-hidden="true"></i> 로그아웃</button>
                 </form>

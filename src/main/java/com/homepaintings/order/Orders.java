@@ -9,10 +9,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity(name = "orders")
+@Entity
 @Getter @Setter @EqualsAndHashCode(of ="id")
 @Builder @NoArgsConstructor @AllArgsConstructor
-public class Order {
+public class Orders {
 
     @Id @GeneratedValue
     private Long id;

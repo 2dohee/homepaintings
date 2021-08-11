@@ -22,7 +22,7 @@ public class OrderService {
     private final ModelMapper modelMapper;
 
     public void create(OrderForm orderForm, List<Cart> cartList, Users user) {
-        Order order = modelMapper.map(orderForm, Order.class);
+        Orders order = modelMapper.map(orderForm, Orders.class);
         order.setTotalPrice(cartList.stream().mapToLong(Cart::getTotalPrice).sum());
         order.setCreatedDateTime(LocalDateTime.now());
         order.setDeliveryStatus(DeliveryStatus.READY);

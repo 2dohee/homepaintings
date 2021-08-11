@@ -1,6 +1,6 @@
 package com.homepaintings.users;
 
-import com.homepaintings.order.Order;
+import com.homepaintings.order.Orders;
 import lombok.*;
 
 import javax.persistence.*;
@@ -49,7 +49,7 @@ public class Users {
     private Authority authority; // 권한은 1개만 가질 수 있음
 
     @OneToMany(mappedBy = "user")
-    private List<Order> orderList = new ArrayList<>();
+    private List<Orders> orderList = new ArrayList<>();
 
     public void generateEmailToken() {
         this.emailToken = UUID.randomUUID().toString() ;
@@ -60,7 +60,7 @@ public class Users {
         return this.emailToken.equals(token) && this.emailTokenGeneratedDateTime.plusMinutes(10).isAfter(LocalDateTime.now());
     }
 
-    public void addOrder(Order order) {
+    public void addOrder(Orders order) {
         this.orderList.add(order);
         order.setUser(this);
     }
