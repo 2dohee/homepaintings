@@ -34,12 +34,14 @@
                     </div>
                 </div>
             </form>
+            <form id="deliveryStatusChangeForm" method="post" th:action="@{/admin/order/list/change/delivery-status}"></form>
+            <button id="deliveryStatusChangeBtn" class="btn btn-primary" type="button">배송상태 변경</button>
             <div class="row justify-content-center py-4">
                 <div class="col-md-9">
-                    <table class="table table-hover">
+                    <table class="table table-hover users-order-list-table">
                         <thead>
                             <tr>
-                                <th scope="col">#</th>
+                                <th scope="col">주문번호</th>
                                 <th scope="col">수령인</th>
                                 <th scope="col">결제금액</th>
                                 <th scope="col">결제일</th>
@@ -47,10 +49,12 @@
                                 <th scope="col">주소</th>
                                 <th scope="col">유저정보(이메일-닉네임)</th>
                                 <th scope="col">상품정보(상품명-수량)</th>
+                                <th scope="col">배송상태</th>
                             </tr>
                         </thead>
                         <tbody th:each="order: ${orderList}">
                             <tr>
+                                <input type="hidden" th:value="${order.id}" class="order-id" />
                                 <th scope="row" th:text="${currentOffset + orderStat.count}"></th>
                                 <td th:text="${order.receiver}"></td>
                                 <td><span th:text="${order.totalPrice}" class="price-format"></span>원</td>
@@ -69,6 +73,16 @@
                                     <div th:each="orderDetails: ${order.orderDetailsList}">
                                         <span th:text="${orderDetails.painting.name}"></span> - <span th:text="${orderDetails.quantity}"></span>개
                                     </div>
+                                </td>
+                                <td>
+                                    <ul class="list-group list-group-horizontal delivery-status-group" th:data-value="${order.deliveryStatus}">
+                                        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" data-value="READY"
+                                           th:classappend="${order.deliveryStatus == T(com.homepaintings.order.DeliveryStatus).READY}?active" role="button">준비중</a>
+                                        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" data-value="SHIPPING"
+                                           th:classappend="${order.deliveryStatus == T(com.homepaintings.order.DeliveryStatus).SHIPPING}?active" role="button">배송중</a>
+                                        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" data-value="COMPLETED"
+                                           th:classappend="${order.deliveryStatus == T(com.homepaintings.order.DeliveryStatus).COMPLETED}?active" role="button">배송 완료</a>
+                                    </ul>
                                 </td>
                             </tr>
                         </tbody>
@@ -105,6 +119,35 @@
 <div th:include="fragments.html :: js-library" th:remove="tag"></div>
 <div th:include="fragments.html :: korea-date-time" th:remove="tag"></div>
 <div th:replace="fragments.html :: price-with-comma"></div>
+<script type="application/javascript">
+    $(function () {
+        const $deliveryStatusChangeForm = $("#deliveryStatusChangeForm");
+
+        $deliveryStatusChangeForm.submit(function (event) {
+            event.preventDefault();
+        });
+
+        $(".delivery-status-group > a").click(function (event) {
+            const $currentTarget = $(event.currentTarget);
+            $currentTarget.siblings("a").removeClass("active");
+            $currentTarget.addClass("active");
+            $currentTarget.closest(".delivery-status-group").attr("data-value", $currentTarget.attr("data-value"));
+        });
+
+        $("#deliveryStatusChangeBtn").click(function (event) {
+            let confirmValue = confirm("버튼을 누르면 현재 페이지의 모든 주문들의 배송상태가 일괄적으로 변경됩니다. 정말 변경하시겠습니까?");
+
+            if (confirmValue) {
+                const orderIdList = $(".users-order-list-table > tbody > tr > .order-id").map((i, el) => el.value).get();
+                const deliveryStatusList = $(".users-order-list-table .delivery-status-group").map((i, el) => el.getAttribute("data-value")).get();
+
+                $deliveryStatusChangeForm.append($("<input>").attr("type", "hidden").attr("name", "orderIdList").val(orderIdList));
+                $deliveryStatusChangeForm.append($("<input>").attr("type", "hidden").attr("name", "deliveryStatusList").val(deliveryStatusList));
+                $deliveryStatusChangeForm[0].submit();
+            }
+        });
+    });
+</script>
 
 </body>
 </html>

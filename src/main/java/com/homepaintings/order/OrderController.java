@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -72,7 +73,7 @@ public class OrderController {
 
     @GetMapping("/admin/order/list")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String viewUsersOrderList(@PageableDefault(size = 10, sort = "createdDateTime", direction = Sort.Direction.DESC) Pageable pageable,
+    public String viewUsersOrderList(@PageableDefault(size = 2, sort = "createdDateTime", direction = Sort.Direction.DESC) Pageable pageable,
                                      @RequestParam(defaultValue = "READY") String deliveryStatus,
                                      @RequestParam(defaultValue = "") String keywords,
                                      @AuthenticatedUser Users user, Model model) {
@@ -116,5 +117,17 @@ public class OrderController {
             return new OrderDetailsForm(p.getName(), p.getType(), p.getPrice(), o.getQuantity());
         }).collect(Collectors.toList());
         return ResponseEntity.ok().body(orderDetailsFormList);
+    }
+
+    @PostMapping("/admin/order/list/change/delivery-status")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public String changeDeliveryStatusToOrderList(DeliveryStatusForm deliveryStatusForm, RedirectAttributes attributes) {
+        ArrayList<Long> orderIdList = deliveryStatusForm.getOrderIdList();
+        ArrayList<DeliveryStatus> deliveryStatusList = deliveryStatusForm.getDeliveryStatusList();
+        if (orderIdList.size() == deliveryStatusList.size()) {
+            orderService.changeDeliveryStatus(orderIdList, deliveryStatusList);
+            attributes.addFlashAttribute("successMessage", "배송 상태를 변경했습니다.");
+        }
+        return "redirect:/admin/order/list";
     }
 }

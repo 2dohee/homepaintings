@@ -11,4 +11,6 @@ public interface OrderRepository extends JpaRepository<Orders, Long>, OrderRepos
 
     List<Orders> findByUserOrderByCreatedDateTimeDesc(Users user);
 
+    List<Orders> findByIdInOrderByCreatedDateTimeDesc(List<Long> ids);
+
 }

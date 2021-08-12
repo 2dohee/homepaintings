@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,4 +41,9 @@ public class OrderService {
         }).collect(Collectors.toList());
     }
 
+    public void changeDeliveryStatus(ArrayList<Long> orderIdList, ArrayList<DeliveryStatus> deliveryStatusList) {
+        List<Orders> orderList = orderRepository.findByIdInOrderByCreatedDateTimeDesc(orderIdList);
+        for (int i = 0; i < orderList.size(); i++) orderList.get(i).setDeliveryStatus(deliveryStatusList.get(i));
+        orderRepository.saveAll(orderList);
+    }
 }
