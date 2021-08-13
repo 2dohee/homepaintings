@@ -11,6 +11,7 @@
             <nav th:replace="fragments.html :: side-menu"></nav>
         </div>
         <div class="col-md-9 col-md-offset-3 mt-5">
+            <div th:replace="fragments.html :: success-message"></div>
             <div class="py-4 text-center">
                 <h4 class="mb-4 mt-1 text-center settings-title">주문 목록</h4>
             </div>
@@ -38,6 +39,8 @@
                         <div class="card-body">
                             <input type="hidden" th:value="${order.id}" class="order-id" />
                             <div class="order-summary">
+                                <form class="order-cancel-form" method="post" th:action="@{'/order/' + ${order.id} + '/cancel'}"></form>
+                                <button class="btn btn-danger order-cancel-btn pull-right" type="button">주문취소</button>
                                 <p>
                                     <span>수령인:</span><span th:text="${order.receiver}"></span>
                                 </p>
@@ -48,7 +51,7 @@
                                     <span>결제일:</span><span class="date-time" th:text="${order.createdDateTime}"></span>
                                 </p>
                                 <p>
-                                    <span>배송상태:</span><span th:text="${order.deliveryStatus}"></span>
+                                    <span>배송상태:</span><span class="order-delivery-status" th:data-value="${order.deliveryStatus}"></span>
                                 </p>
                             </div>
                             <button class="btn btn-info order-details-btn" value="자세히">자세히</button>
@@ -78,6 +81,7 @@
 <script type="application/javascript">
     $(function () {
         const $orderDetailsBtn = $(".order-details-btn");
+
         $orderDetailsBtn.click(function (event) {
             const $currentTarget = $(event.currentTarget);
             if ($currentTarget.val() === "자세히") {
@@ -97,6 +101,35 @@
 
                 $currentTarget.siblings(".order-details").slideDown();
                 event.currentTarget.style.display = "none";
+            }
+        });
+
+        $(".order-delivery-status").each((i, el) => {
+            const value = el.getAttribute("data-value");
+            if (value === "READY") el.textContent = "준비중";
+            else {
+                $(el).closest("p").siblings(".order-cancel-btn").hide();
+                if (value === "SHIPPING") el.textContent = "배송중";
+                else if (value === "COMPLETED") el.textContent = "배송 완료";
+            }
+
+        });
+    });
+</script>
+<script type="application/javascript">
+    $(function () {
+        $(".order-cancel-form").submit(function (event) {
+            event.preventDefault();
+        });
+
+        $(".order-cancel-btn").click(function (event) {
+            let confirmValue = confirm("정말 주문을 취소하시겠습니까?");
+
+            if (confirmValue) {
+                const deliveryStatus = $(event.currentTarget).siblings("p").children(".order-delivery-status").attr("data-value");
+                if (deliveryStatus === "READY") {
+                    $(event.currentTarget).siblings(".order-cancel-form")[0].submit();
+                }
             }
         });
     });

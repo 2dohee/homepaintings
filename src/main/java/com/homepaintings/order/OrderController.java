@@ -25,6 +25,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -73,7 +74,7 @@ public class OrderController {
 
     @GetMapping("/admin/order/list")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String viewUsersOrderList(@PageableDefault(size = 2, sort = "createdDateTime", direction = Sort.Direction.DESC) Pageable pageable,
+    public String viewUsersOrderList(@PageableDefault(size = 10, sort = "createdDateTime", direction = Sort.Direction.DESC) Pageable pageable,
                                      @RequestParam(defaultValue = "READY") String deliveryStatus,
                                      @RequestParam(defaultValue = "") String keywords,
                                      @AuthenticatedUser Users user, Model model) {
@@ -129,5 +130,15 @@ public class OrderController {
             attributes.addFlashAttribute("successMessage", "배송 상태를 변경했습니다.");
         }
         return "redirect:/admin/order/list";
+    }
+
+    @PostMapping("/order/{id}/cancel")
+    public String cancelOrder(@PathVariable Long id, @AuthenticatedUser Users user, Model model, RedirectAttributes attributes) {
+        model.addAttribute("user", user);
+        Optional<Orders> byIdAndUser = orderRepository.findByIdAndUser(id, user);
+        if (byIdAndUser.isEmpty() || !byIdAndUser.get().getDeliveryStatus().equals(DeliveryStatus.READY)) return "error";
+        orderService.removeOrder(byIdAndUser.get());
+        attributes.addFlashAttribute("successMessage", "주문을 취소했습니다.");
+        return "redirect:/order/list";
     }
 }
