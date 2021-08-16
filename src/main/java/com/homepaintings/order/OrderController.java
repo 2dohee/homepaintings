@@ -134,9 +134,11 @@ public class OrderController {
 
     @PostMapping("/order/{id}/cancel")
     public String cancelOrder(@PathVariable Long id, @AuthenticatedUser Users user, Model model, RedirectAttributes attributes) {
-        model.addAttribute("user", user);
         Optional<Orders> byIdAndUser = orderRepository.findByIdAndUser(id, user);
-        if (byIdAndUser.isEmpty() || !byIdAndUser.get().getDeliveryStatus().equals(DeliveryStatus.READY)) return "error";
+        if (byIdAndUser.isEmpty() || !byIdAndUser.get().getDeliveryStatus().equals(DeliveryStatus.READY)) {
+            model.addAttribute("user", user);
+            return "error";
+        }
         orderService.removeOrder(byIdAndUser.get());
         attributes.addFlashAttribute("successMessage", "주문을 취소했습니다.");
         return "redirect:/order/list";

@@ -16,10 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -110,11 +107,12 @@ class CartControllerTest {
                 .andExpect(model().attributeExists("user", "cartList"))
                 .andExpect(authenticated().withUsername(TEST_EMAIL)).andReturn().getModelAndView().getModel();
 
-        List<Cart> carList = (List<Cart>) model.get("cartList");
-        assertEquals(carList.get(0), cart4);
-        assertEquals(carList.get(1), cart3);
-        assertEquals(carList.get(2), cart2);
-        assertEquals(carList.get(3), cart1);
+        List<Cart> cartList = (List<Cart>) model.get("cartList");
+        Collections.sort(cartList, Comparator.comparingLong(Cart::getId));
+        assertEquals(cartList.get(0).getId(), cart1.getId());
+        assertEquals(cartList.get(1).getId(), cart2.getId());
+        assertEquals(cartList.get(2).getId(), cart3.getId());
+        assertEquals(cartList.get(3).getId(), cart4.getId());
     }
 
     @Test

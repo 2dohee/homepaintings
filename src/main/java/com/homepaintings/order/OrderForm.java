@@ -1,13 +1,13 @@
 package com.homepaintings.order;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
 
 @Getter @Setter
+@Builder @NoArgsConstructor @AllArgsConstructor
 public class OrderForm {
 
     @NotBlank
