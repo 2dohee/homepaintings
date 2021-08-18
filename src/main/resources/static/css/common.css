@@ -88,3 +88,16 @@ textarea,
     display: inline-block;
     margin-left: 100px;
 }
+
+.horizontal-card {
+    max-width: 800px;
+    position: relative;
+}
+
+.horizontal-card-footer {
+    position: absolute;
+    bottom: 0;
+    right:0;
+    padding-right: 10px;
+    padding-bottom: 10px;
+}

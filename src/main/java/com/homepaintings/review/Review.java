@@ -7,6 +7,10 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@NamedEntityGraph(name = "Review.withUser", attributeNodes = {
+        @NamedAttributeNode("user")
+})
+
 @Entity
 @Getter @Setter @EqualsAndHashCode(of = "id")
 @Builder @NoArgsConstructor @AllArgsConstructor
@@ -24,8 +28,10 @@ public class Review {
     @Column(nullable = false)
     private Integer rank;
 
+    @Lob
     private String image;
 
+    @Lob
     @Column(nullable = false)
     private String content;
 

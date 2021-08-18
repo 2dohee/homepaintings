@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="fragments.html :: head"></div>
+<body class="bg-light">
+<nav th:replace="fragments.html :: main-nav"></nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3 px-0">
+            <nav th:replace="fragments.html :: side-menu"></nav>
+        </div>
+        <div class="col-md-9 col-md-offset-3 mt-5">
+            <a th:href="@{'/painting/' + ${paintingId} + '/review/write'}" class="btn btn-primary text-end">리뷰 작성하기</a>
+            <div class="row row-cols-1 justify-content-center py-4">
+                <div th:each="review: ${reviewList}" class="col-md-8 mb-3">
+                    <div class="card border-dark shadow-sm h-100 horizontal-card">
+                        <div class="row g-0">
+                            <div class="col-5">
+                                <img class="card-img" th:if="${#strings.isEmpty(review.image)}"
+                                     src="/images/no_image.png" alt="&times;" />
+                                <img class="card-img" th:if="${!#strings.isEmpty(review.image)}"
+                                     th:src="${review.image}" alt="&times;" />
+                            </div>
+                            <div class="col-7">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <span th:text="${review.user.nickname}"></span>
+                                    </h5>
+                                    <div class="text-end">
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa" th:classappend="${review.rank > 1} ? 'fa-star' : 'fa-star-o'"></i>
+                                        <i class="fa" th:classappend="${review.rank > 2} ? 'fa-star' : 'fa-star-o'"></i>
+                                        <i class="fa" th:classappend="${review.rank > 3} ? 'fa-star' : 'fa-star-o'"></i>
+                                        <i class="fa" th:classappend="${review.rank > 4} ? 'fa-star' : 'fa-star-o'"></i>
+                                    </div>
+                                    <span th:utext="${review.content}"></span>
+                                    <div class="text-muted horizontal-card-footer">
+                                        <span th:text="${review.updatedDateTime}" class="fromNow"></span><span th:if="${review.updatedDateTime != review.createdDateTime}">(수정됨)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-9">
+                    <nav>
+                        <ul class="pagination justify-content-between">
+                            <li class="page-item" th:classappend="${currentFirstPage < 10}? disabled">
+                                <a th:href="@{'/painting/' + ${paintingId} + '/review/list'(page=${currentFirstPage - 10})}" class="page-link"><i class="fa fa-long-arrow-left" aria-hidden="true"></i></a>
+                            </li>
+                            <div class="d-inline-flex justify-content-center">
+                                <li class="page-item" th:classappend="${i == reviewList.getNumber()}? active"
+                                    th:each="i : ${#numbers.sequence(currentFirstPage, currentLastPage, 1)}">
+                                    <a th:href="@{'/painting/' + ${paintingId} + '/review/list'(page=${i})}" class="page-link" th:text="${i + 1}"></a>
+                                </li>
+                            </div>
+                            <li class="page-item" th:classappend="${currentLastPage >= reviewList.getTotalPages() - 1}? disabled">
+                                <a th:href="@{'/painting/' + ${paintingId} + '/review/list'(page=${currentLastPage + 1})}" class="page-link"><i class="fa fa-long-arrow-right" aria-hidden="true"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:include="fragments.html :: js-library" th:remove="tag"></div>
+<div th:include="fragments.html :: korea-date-time" th:remove="tag"></div>
+</body>
+</html>

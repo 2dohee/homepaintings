@@ -26,6 +26,7 @@ public class Painting {
     @Lob
     private String image;
 
+    @Lob
     private String description;
 
     private LocalDateTime createdDateTime;
