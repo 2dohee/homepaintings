@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="fragments.html :: head"></div>
+<body class="bg-light">
+<nav th:replace="fragments.html :: main-nav"></nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3 px-0">
+            <nav th:replace="fragments.html :: side-menu"></nav>
+        </div>
+        <div class="col-md-9 col-md-offset-3 mt-5">
+            <form th:action="@{'/painting/' + ${id} + '/review/write'}" method="post" th:object="${reviewForm}" class="row row-cols-1 justify-content-center">
+                <input th:field="*{image}" id="reviewImage" type="hidden" />
+                <input th:field="*{rank}" id="reviewRank" type="hidden" />
+                <div class="col-md-6 mb-4">
+                    <div class="card text-center">
+                        <div class="card-header">
+                            리뷰 이미지
+                        </div>
+                        <div id="current-review-image" class="mt-3">
+                            <img th:src="@{'/images/no_image.png'}" class="border" width="125" height="125" alt="&times;" />
+                        </div>
+                        <div id="new-review-image" class="mt-3"></div>
+                        <div class="card-body">
+                            <div class="custom-file">
+                                <input id="review-image-file" class="custom-file-input" type="file" />
+                                <label for="review-image-file" class="custom-file-label">이미지 변경</label>
+                            </div>
+                            <div id="new-image-control" class="mt-3">
+                                <button class="btn btn-outline-primary col-12" id="cut-button" type="button">자르기</button>
+                                <button class="btn btn-outline-success col-12" id="confirm-button" type="button">확인</button>
+                                <button class="btn btn-outline-warning col-12" id="reset-button" type="button">취소</button>
+                            </div>
+                            <div id="cropped-new-review-image" class="mt-3"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-10 mb-4">
+                    <textarea th:field="*{content}" class="editor" type="textarea"></textarea>
+                </div>
+                <div class="col-md-10 mb-4 rank">
+                    <i class="fa fa-star"><input name="rank" class="star" type="radio" /></i>
+                    <i class="fa fa-star"><input name="rank" class="star" type="radio" /></i>
+                    <i class="fa fa-star"><input name="rank" class="star" type="radio" /></i>
+                    <i class="fa fa-star"><input name="rank" class="star" type="radio" /></i>
+                    <i class="fa fa-star"><input name="rank" class="star" type="radio" /></i>
+                </div>
+                <div class="col-md-10">
+                    <button type="submit" class="btn btn-primary d-grid col-12">등록하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:include="fragments.html :: js-library" th:remove="tag"></div>
+<div th:include="fragments.html :: text-editor" th:remove="tag"></div>
+<link rel="stylesheet" href="/node_modules/cropper/dist/cropper.min.css" />
+<script src="/node_modules/cropper/dist/cropper.min.js"></script>
+<script src="/node_modules/jquery-cropper/dist/jquery-cropper.min.js"></script>
+<script type="application/javascript">
+    $(function () {
+        let cropper = '';
+        let $confirmBtn = $("#confirm-button");
+        let $resetBtn = $("#reset-button");
+        let $cutBtn = $("#cut-button");
+        let $currentReviewImage = $("#current-review-image");
+        let $newReviewImage = $("#new-review-image");
+        let $resultImage = $("#cropped-new-review-image");
+        let $reviewImage = $("#reviewImage");
+        let $reviewImageFile = $("#review-image-file");
+
+        $newReviewImage.hide();
+        $confirmBtn.hide();
+        $resetBtn.hide();
+        $cutBtn.hide();
+
+        $($reviewImageFile).change(function (e) {
+            if (e.target.files.length == 1) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    if (e.target.result) { // dataURL
+                        if (!e.target.result.startsWith("data:image")) {
+                            alert("이미지 파일을 선택하세요.");
+                            return;
+                        }
+                        let img = document.createElement("img");
+                        img.id = 'new-review';
+                        img.src = e.target.result;
+                        img.setAttribute('max-width', '100%');
+
+                        $newReviewImage.html(img);
+                        $newReviewImage.show();
+                        $currentReviewImage.hide();
+
+                        let $newImage = $(img);
+                        $newImage.cropper({ aspectRatio: 1 });
+                        cropper = $newImage.data('cropper');
+
+                        $confirmBtn.hide();
+                        $resetBtn.show();
+                        $cutBtn.show();
+                    }
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+
+        $resetBtn.click(function () {
+            $confirmBtn.hide();
+            $resetBtn.hide();
+            $cutBtn.hide();
+            $currentReviewImage.show();
+            $newReviewImage.hide();
+            $resultImage.hide();
+            $reviewImage.val('');
+            $reviewImageFile.val('');
+        });
+
+        $cutBtn.click(function () {
+            let dataUrl = cropper.getCroppedCanvas().toDataURL();
+            if (dataUrl.length > 10 * 1024 * 1024) {
+                alert("이미지 파일 크기 제한: 10MB => 현재 파일 크기: " + dataUrl.length);
+                return;
+            }
+            let resultImg = document.createElement("img");
+            resultImg.id = "cropped-new-review-image";
+            resultImg.src = dataUrl;
+            resultImg.width = 125;
+            $resultImage.html(resultImg);
+            $resultImage.show();
+            $confirmBtn.show();
+
+            $confirmBtn.click(function () {
+                $cutBtn.hide();
+                $confirmBtn.hide();
+                $newReviewImage.html(resultImg);
+                $reviewImage.val(dataUrl);
+            });
+        });
+    });
+</script>
+<script type="application/javascript">
+    $(function () {
+        const $rank = $(".rank i");
+        const $reviewRank = $("#reviewRank");
+        $rank.click(function (event) {
+            let $currentTarget = $(event.currentTarget);
+            $currentTarget.children("input").prop("checked", true);
+            $currentTarget.prevAll().addBack().removeClass("fa-star-o").addClass("fa-star");
+            const next = $currentTarget.nextAll();
+            next.removeClass("fa-star").addClass("fa-star-o");
+            $reviewRank.val(5 - next.length);
+        });
+    });
+</script>
+
+</body>
+</html>

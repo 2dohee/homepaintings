@@ -37,6 +37,9 @@
                                     <span th:utext="${review.content}"></span>
                                     <div class="text-muted horizontal-card-footer">
                                         <span th:text="${review.updatedDateTime}" class="fromNow"></span><span th:if="${review.updatedDateTime != review.createdDateTime}">(수정됨)</span>
+                                        <form th:if="${review.user.id == user.id}" th:action="@{'/painting/' + ${id} + '/review/remove/' + ${review.id}}" method="post" class="text-end">
+                                            <button class="btn btn-danger btn-sm" type="button">삭제</button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>

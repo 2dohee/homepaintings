@@ -175,33 +175,28 @@ class UsersControllerTest {
     @WithUser(value = TEST_EMAIL, authority = Authority.ROLE_ADMIN)
     @DisplayName("관리자 유저 관리 페이지가 성공적으로 뜨는지 확인")
     void admin_userInfo() throws Exception {
-        for (int i = 0; i < 1000; i++) {
-            boolean emailVerified = false;
-            if (i % 2 == 0) emailVerified = true; // 짝수만 인증
-            usersFactory.saveNewUser("user" + i + "@email.com", "닉네임" + i, emailVerified);
+        for (int i = 1; i <= 210; i++) {
+            usersFactory.saveNewUser("user" + i + "@email.com", "닉네임" + i, true);
         }
 
         Map<String, Object> model = mockMvc.perform(get("/admin/users-info")
-                    .param("page", "21") // 22 페이지
+                    .param("page", "10") // 11 페이지
                     .param("onlyEmailVerified", "true")
                     .param("keywords", "네임") // 닉네임
                     .param("sorting", "생성일"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("users/admin/users-info"))
                 .andExpect(model().attributeExists("user", "userList", "onlyEmailVerified", "keywords", "sorting"))
-                .andExpect(model().attribute("currentFirstPage", 20))
-                .andExpect(model().attribute("currentLastPage", 24))
-                .andExpect(model().attribute("currentOffset", 420)) // 21 * 20
+                .andExpect(model().attribute("currentFirstPage", 10))
+                .andExpect(model().attribute("currentLastPage", 10))
+                .andExpect(model().attribute("currentOffset", 200)) // 10 * 20
                 .andExpect(authenticated().withAuthorities(List.of(new SimpleGrantedAuthority(Authority.ROLE_ADMIN.toString()))))
                 .andReturn().getModelAndView().getModel();
 
         Page<Users> userList = (Page<Users>) model.get("userList");
-        assertEquals(userList.getNumber(), 21);
-        assertEquals(userList.getTotalPages(), 25); // 0 ~ 24
-        assertEquals(userList.getTotalElements(), 500); // 25 * 20
-        assertEquals(userList.getNumberOfElements(), 20);
-        for (int i = 0; i < userList.getNumberOfElements(); i++) {
-            assertEquals(userList.getContent().get(i).getEmail(), "user" + (158-2*i) + "@email.com"); // 인증된 생성일 내림차순 확인
-        }
+        assertEquals(userList.getNumber(), 10);
+        assertEquals(userList.getTotalPages(), 11); // 0 ~ 10
+        assertEquals(userList.getTotalElements(), 210);
+        assertEquals(userList.getNumberOfElements(), 10);
     }
 }

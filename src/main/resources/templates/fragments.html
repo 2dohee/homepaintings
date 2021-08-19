@@ -254,4 +254,19 @@
     <script src="/node_modules/jdenticon/dist/jdenticon.min.js"></script>
 </div>
 
+<div th:fragment="text-editor">
+    <link rel="stylesheet" href="/node_modules/summernote/dist/summernote-bs4.min.css" />
+    <script src="/node_modules/summernote/dist/summernote-bs4.js"></script>
+    <script type="application/javascript">
+        $(function () {
+            $('.editor').summernote({
+                fontName: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Noto Sans KR', 'Merriweather'],
+                placeholder: '자세한 내용을 기재해주세요.',
+                tabSize: 2,
+                height: 300
+            });
+        });
+    </script>
+</div>
+
 </html>

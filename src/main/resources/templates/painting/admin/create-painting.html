@@ -17,90 +17,79 @@
             </div>
             <hr />
             <a th:href="@{'/view-paintings'}" class="btn btn-info" role="button">상품 전체 조회</a>
-            <form th:action="@{'/admin/create-painting'}" method="post" th:object="${paintingForm}" class="form-custom-validation">
-                <div class="row justify-content-center">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="paintingName">상품명</label>
-                            <input id="paintingName" type="text" th:field="*{name}" class="form-control" maxlength="100" placeholder="상품명을 입력해 주세요." required/>
-                            <small class="invalid-feedback">올바른 상품명을 입력하세요.</small>
-                            <small class="form-text text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name Error</small>
-                        </div>
-                        <div class="form-group mt-4">
-                            <label for="paintingType">상품 종류</label>
-                            <select id="paintingType" th:field="*{type}" class="form-select" required>
-                                <option th:each="p : ${paintingType}" th:value="${p}" th:text="${p}"></option>
-                            </select>
-                        </div>
-                        <div class="form-group mt-4">
-                            <label for="paintingPrice">상품 가격</label>
-                            <input id="paintingPrice" type="number" th:field="*{price}" class="form-control" maxlength="10" placeholder="가격을 입력해 주세요." required/>
-                            <small class="invalid-feedback">올바른 상품 가격을 입력하세요.</small>
-                            <small class="form-text text-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}">Price Error</small>
-                        </div>
-                        <div class="form-group mt-4">
-                            <label for="paintingStock">상품 수량</label>
-                            <input id="paintingStock" type="number" th:field="*{stock}" class="form-control" maxlength="10" placeholder="수량을 입력해 주세요." required/>
-                            <small class="invalid-feedback">올바른 상품 수량을 입력하세요.</small>
-                            <small class="form-text text-danger" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}">Stock Error</small>
-                        </div>
-                        <div class="form-group">
-                            <input th:field="*{image}" id="paintingImage" class="form-control" type="hidden" />
-                        </div>
+            <form th:action="@{'/admin/create-painting'}" method="post" th:object="${paintingForm}" class="form-custom-validation" novalidate>
+            <div class="row justify-content-center">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="paintingName">상품명</label>
+                        <input id="paintingName" type="text" th:field="*{name}" class="form-control" maxlength="100" placeholder="상품명을 입력해 주세요." required/>
+                        <small class="invalid-feedback">올바른 상품명을 입력하세요.</small>
+                        <small class="form-text text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name Error</small>
                     </div>
-                    <div class="col-md-6">
-                        <div class="card text-center">
-                            <div class="card-header">
-                                상품 이미지
+                    <div class="form-group mt-4">
+                        <label for="paintingType">상품 종류</label>
+                        <select id="paintingType" th:field="*{type}" class="form-select" required>
+                            <option th:each="p : ${paintingType}" th:value="${p}" th:text="${p}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group mt-4">
+                        <label for="paintingPrice">상품 가격</label>
+                        <input id="paintingPrice" type="number" th:field="*{price}" class="form-control" maxlength="10" placeholder="가격을 입력해 주세요." required/>
+                        <small class="invalid-feedback">올바른 상품 가격을 입력하세요.</small>
+                        <small class="form-text text-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}">Price Error</small>
+                    </div>
+                    <div class="form-group mt-4">
+                        <label for="paintingStock">상품 수량</label>
+                        <input id="paintingStock" type="number" th:field="*{stock}" class="form-control" maxlength="10" placeholder="수량을 입력해 주세요." required/>
+                        <small class="invalid-feedback">올바른 상품 수량을 입력하세요.</small>
+                        <small class="form-text text-danger" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}">Stock Error</small>
+                    </div>
+                    <div class="form-group">
+                        <input th:field="*{image}" id="paintingImage" class="form-control" type="hidden" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card text-center">
+                        <div class="card-header">
+                            상품 이미지
+                        </div>
+                        <div id="current-painting-image" class="mt-3">
+                            <img th:src="@{'/images/no_image.png'}" class="border" width="125" height="125" alt="&times;" />
+                        </div>
+                        <div id="new-painting-image" class="mt-3"></div>
+                        <div class="card-body">
+                            <div class="custom-file">
+                                <input id="painting-image-file" class="custom-file-input" type="file" />
+                                <label for="painting-image-file" class="custom-file-label">이미지 변경</label>
                             </div>
-                            <div id="current-painting-image" class="mt-3">
-                                <img th:src="@{'/images/no_image.png'}" class="border" width="125" height="125" alt="&times;" />
+                            <div id="new-image-control" class="mt-3">
+                                <button class="btn btn-outline-primary col-12" id="cut-button" type="button">자르기</button>
+                                <button class="btn btn-outline-success col-12" id="confirm-button" type="button">확인</button>
+                                <button class="btn btn-outline-warning col-12" id="reset-button" type="button">취소</button>
                             </div>
-                            <div id="new-painting-image" class="mt-3"></div>
-                            <div class="card-body">
-                                <div class="custom-file">
-                                    <input id="painting-image-file" class="custom-file-input" type="file" />
-                                    <label for="painting-image-file" class="custom-file-label">이미지 변경</label>
-                                </div>
-                                <div id="new-image-control" class="mt-3">
-                                    <button class="btn btn-outline-primary col-12" id="cut-button">자르기</button>
-                                    <button class="btn btn-outline-success col-12" id="confirm-button">확인</button>
-                                    <button class="btn btn-outline-warning col-12" id="reset-button">취소</button>
-                                </div>
-                                <div id="cropped-new-painting-image" class="mt-3"></div>
-                            </div>
+                            <div id="cropped-new-painting-image" class="mt-3"></div>
                         </div>
                     </div>
                 </div>
-                <div class="form-group row justify-content-center mt-4">
-                    <div class="col-md-10">
-                        <textarea th:field="*{description}" class="form-control editor" type="textarea"></textarea>
-                    </div>
+            </div>
+            <div class="form-group row justify-content-center mt-4">
+                <div class="col-md-10">
+                    <textarea th:field="*{description}" class="form-control editor" type="textarea"></textarea>
                 </div>
-                <div class="form-group row justify-content-center mt-4">
-                    <div class="col-md-10">
-                        <button type="submit" class="btn btn-primary d-grid col-12">등록하기</button>
-                    </div>
+            </div>
+            <div class="form-group row justify-content-center mt-4">
+                <div class="col-md-10">
+                    <button type="submit" class="btn btn-primary d-grid col-12">등록하기</button>
                 </div>
-            </form>
+            </div>
+        </form>
         </div>
     </div>
 </div>
 
 <div th:replace="fragments.html :: form-validation"></div>
 <div th:include="fragments.html :: js-library" th:remove="tag"></div>
-<link rel="stylesheet" href="/node_modules/summernote/dist/summernote-bs4.min.css" />
-<script src="/node_modules/summernote/dist/summernote-bs4.js"></script>
-<script type="application/javascript">
-    $(function () {
-        $('.editor').summernote({
-            fontName: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Noto Sans KR', 'Merriweather'],
-            placeholder: '자세한 내용을 기재해주세요.',
-            tabSize: 2,
-            height: 300
-        });
-    });
-</script>
+<div th:include="fragments.html :: text-editor" th:remove="tag"></div>
 <link rel="stylesheet" href="/node_modules/cropper/dist/cropper.min.css" />
 <script src="/node_modules/cropper/dist/cropper.min.js"></script>
 <script src="/node_modules/jquery-cropper/dist/jquery-cropper.min.js"></script>
@@ -152,8 +141,7 @@
             }
         });
 
-        $resetBtn.click(function (event) {
-            event.preventDefault();
+        $resetBtn.click(function () {
             $confirmBtn.hide();
             $resetBtn.hide();
             $cutBtn.hide();
@@ -164,8 +152,7 @@
             $paintingImageFile.val('');
         });
 
-        $cutBtn.click(function (event) {
-            event.preventDefault();
+        $cutBtn.click(function () {
             let dataUrl = cropper.getCroppedCanvas().toDataURL();
             if (dataUrl.length > 10 * 1024 * 1024) {
                 alert("이미지 파일 크기 제한: 10MB => 현재 파일 크기: " + dataUrl.length);
@@ -179,8 +166,7 @@
             $resultImage.show();
             $confirmBtn.show();
 
-            $confirmBtn.click(function (event) {
-                event.preventDefault();
+            $confirmBtn.click(function () {
                 $cutBtn.hide();
                 $confirmBtn.hide();
                 $newPaintingImage.html(resultImg);

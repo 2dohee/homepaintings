@@ -31,8 +31,6 @@ public class Review {
     @Lob
     private String image;
 
-    @Lob
-    @Column(nullable = false)
     private String content;
 
     private LocalDateTime createdDateTime;
