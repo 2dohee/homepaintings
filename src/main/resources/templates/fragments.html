@@ -24,6 +24,12 @@
         <li sec:authorize="!isAuthenticated()" class="nav-item px-2">
             <a class="nav-link" th:href="@{/login}"><i class="fa fa-sign-in" aria-hidden="true"></i> 로그인</a>
         </li>
+        <li sec:authorize="isAuthenticated()" class="nav-item px-2">
+            <a class="nav-link position-relative" th:href="@{/notifications}">
+                <i class="fa" th:classappend="${notificationCount > 0 ? 'fa-bell' : 'fa-bell-o'}" aria-hidden="true"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" th:text="${notificationCount}"></span>
+            </a>
+        </li>
         <li sec:authorize="isAuthenticated()" class="nav-item dropdown px-2">
             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <svg th:if="${#strings.isEmpty(user?.profileImage)}" th:data-jdenticon-value="${user?.nickname}" class="rounded border bg-light" width="24" height="24" />
