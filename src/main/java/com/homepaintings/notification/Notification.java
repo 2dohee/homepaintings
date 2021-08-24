@@ -21,9 +21,7 @@ public class Notification {
     @ManyToOne
     private Users user;
 
-    private String title;
-
-    private String content;
+    private String message;
 
     private LocalDateTime createdDateTime;
 

@@ -37,9 +37,8 @@
                                         <span th:if="${notification.type == T(com.homepaintings.notification.NotificationType).ORDER_CANCELED}">주문취소</span>
                                         <span th:if="${notification.type == T(com.homepaintings.notification.NotificationType).DELIVERY_CHANGED}">배송상태변경</span>
                                     </div>
-                                    <span th:text="${notification.title}"></span>
                                 </div>
-                                <p th:text="${notification.content}"></p>
+                                <p th:text="${notification.message}"></p>
                                 <div>
                                     <small th:text="${notification.createdDateTime}" class="text-muted fromNow pull-right"></small>
                                 </div>
@@ -84,7 +83,12 @@
         });
 
         $notificationCheckBtn.click(function () {
-            const checkedIdList = $(".card input.form-check-input:checked").attr("data-value");
+            let checkedIdList = [];
+
+            $(".card input.form-check-input:checked").each(function () {
+                checkedIdList.push($(this).attr("data-value"));
+            });
+
             if (checkedIdList.length > 0) {
                 let input = $("<input>")
                     .attr("type", "hidden")

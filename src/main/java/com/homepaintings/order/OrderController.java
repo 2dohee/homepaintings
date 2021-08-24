@@ -134,7 +134,7 @@ public class OrderController {
 
     @PostMapping("/order/{id}/cancel")
     public String cancelOrder(@PathVariable Long id, @AuthenticatedUser Users user, Model model, RedirectAttributes attributes) {
-        Optional<Orders> byIdAndUser = orderRepository.findByIdAndUser(id, user);
+        Optional<Orders> byIdAndUser = orderRepository.findOrdersWithUserByIdAndUser(id, user);
         if (byIdAndUser.isEmpty() || !byIdAndUser.get().getDeliveryStatus().equals(DeliveryStatus.READY)) {
             model.addAttribute("user", user);
             return "error";

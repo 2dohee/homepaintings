@@ -1,6 +1,5 @@
 package com.homepaintings.order;
 
-import com.homepaintings.cart.Cart;
 import com.homepaintings.users.Users;
 import lombok.*;
 
@@ -8,6 +7,10 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+@NamedEntityGraph(name = "Orders.withUser", attributeNodes = {
+        @NamedAttributeNode("user")
+})
 
 @Entity
 @Getter @Setter @EqualsAndHashCode(of ="id")
@@ -17,7 +20,7 @@ public class Orders {
     @Id @GeneratedValue
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Users user;
 
     @Column(nullable = false)
